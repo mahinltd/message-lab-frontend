@@ -1,0 +1,12 @@
+import { AuthCard } from "@/components/auth/AuthCard";
+import { LoginForm } from "@/components/auth/LoginForm";
+
+export const metadata = { title: "Sign In" };
+
+export default function LoginPage() {
+  return (
+    <AuthCard title="Welcome back" subtitle="Sign in to your Messages Lab account">
+      <LoginForm />
+    </AuthCard>
+  );
+}
