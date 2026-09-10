@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Wallet, CreditCard } from "lucide-react";
+import { Wallet, CreditCard, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BillingService } from "@/lib/billing";
+import { BillingService, PaymentMethods } from "@/lib/billing";
 import { PlanConfig } from "@/types";
 import { getApiErrorMessage } from "@/lib/utils";
 
@@ -45,6 +45,8 @@ interface PaymentFormProps {
 
 export function PaymentForm({ plan, onSuccess, onCancel }: PaymentFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethods | null>(null);
+  const [copied, setCopied] = useState(false);
   const {
     register,
     handleSubmit,
@@ -57,8 +59,45 @@ export function PaymentForm({ plan, onSuccess, onCancel }: PaymentFormProps) {
   });
 
   const selected = useWatch({ control, name: "paymentMethod" });
+  const selectedMethod = paymentMethods?.[selected];
+  const receiverNumber = selectedMethod?.number || "";
+  const isConfigured = receiverNumber.length > 0;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    BillingService.getPaymentMethods()
+      .then((methods) => {
+        if (!cancelled) setPaymentMethods(methods);
+      })
+      .catch(() => {
+        if (!cancelled) setPaymentMethods(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const copyReceiverNumber = async () => {
+    if (!receiverNumber) return;
+
+    try {
+      await navigator.clipboard.writeText(receiverNumber);
+      setCopied(true);
+      toast.success("Payment number copied");
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      toast.error("Unable to copy payment number");
+    }
+  };
 
   const onSubmit = async (data: FormInput) => {
+    if (!isConfigured) {
+      toast.error(`Payment number for ${data.paymentMethod} is not configured yet.`);
+      return;
+    }
+
     setIsLoading(true);
     try {
       await BillingService.submitPayment({
@@ -127,9 +166,43 @@ export function PaymentForm({ plan, onSuccess, onCancel }: PaymentFormProps) {
           <p className="font-semibold text-slate-900 mb-1">Steps:</p>
           <ol className="list-decimal list-inside space-y-0.5">
             <li>Open your {selected} app</li>
-            <li>Send ৳{plan.priceMonthly} to <span className="font-mono font-semibold">01XXXXXXXXX</span></li>
+            <li>
+              Send ৳{plan.priceMonthly} to{" "}
+              {isConfigured ? (
+                <span className="inline-flex items-center gap-2 align-middle">
+                  <span className="font-mono font-bold text-indigo-600">{receiverNumber}</span>
+                  <button
+                    type="button"
+                    onClick={copyReceiverNumber}
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-indigo-600 hover:bg-indigo-50"
+                    aria-label={`Copy ${selected} payment number`}
+                    title="Copy payment number"
+                  >
+                    {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                    <span>{copied ? "Copied" : "Copy"}</span>
+                  </button>
+                </span>
+              ) : (
+                <span className="font-mono font-semibold">Not configured</span>
+              )}
+            </li>
             <li>Copy the transaction ID and paste below</li>
           </ol>
+          {isConfigured && (
+            <span className="mt-3 inline-flex rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
+              {selectedMethod?.type} account
+            </span>
+          )}
+          {!isConfigured && (
+            <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800">
+              Payment number for {selected?.toUpperCase()} is not configured yet. Please choose another method or try again later.
+            </p>
+          )}
+          {paymentMethods?.instructions && (
+            <p className="mt-3 border-t border-slate-200 pt-3 whitespace-pre-line">
+              {paymentMethods.instructions}
+            </p>
+          )}
         </div>
 
         <Input
@@ -156,7 +229,7 @@ export function PaymentForm({ plan, onSuccess, onCancel }: PaymentFormProps) {
           {...register("note")}
         />
 
-        <Button type="submit" variant="primary" size="lg" className="w-full gap-2" isLoading={isLoading}>
+        <Button type="submit" variant="primary" size="lg" className="w-full gap-2" isLoading={isLoading} disabled={!isConfigured}>
           <CreditCard className="w-4 h-4" />
           Submit Payment for Review
         </Button>

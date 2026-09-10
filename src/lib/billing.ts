@@ -1,6 +1,25 @@
 import { api } from "@/lib/api";
 
+export type PaymentMethodType = "Personal" | "Merchant";
+
+export interface PaymentMethodDetails {
+  number: string;
+  type: PaymentMethodType;
+}
+
+export interface PaymentMethods {
+  bkash: PaymentMethodDetails;
+  nagad: PaymentMethodDetails;
+  rocket: PaymentMethodDetails;
+  instructions: string;
+}
+
 export class BillingService {
+  static async getPaymentMethods(): Promise<PaymentMethods> {
+    const res = await api.get("/public/payment-methods");
+    return res.data.data;
+  }
+
   static async getSubscription() {
     const res = await api.get("/payments/subscription");
     return res.data.data;

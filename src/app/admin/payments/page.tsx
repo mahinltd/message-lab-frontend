@@ -11,6 +11,7 @@ import { AdminService } from "@/lib/admin";
 import { toast } from "sonner";
 import { AdminPayment } from "@/types";
 import { getApiErrorMessage } from "@/lib/utils";
+import { PaymentMethodsEditor } from "@/components/admin/PaymentMethodsEditor";
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState<AdminPayment[]>([]);
@@ -105,6 +106,8 @@ export default function AdminPaymentsPage() {
           <option value="rejected">Rejected</option>
         </select>
       </div>
+
+      <PaymentMethodsEditor />
 
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
         {loading ? (
