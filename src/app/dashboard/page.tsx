@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Send, Smartphone, CreditCard, MessageSquare, ArrowRight, Plus, Loader2,
+  Send, Smartphone, CreditCard, MessageSquare, ArrowRight, Plus, Loader2, Info,
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
@@ -42,8 +42,9 @@ export default function DashboardOverview() {
 
   const totalSent = campaigns.reduce((s, c) => s + c.successCount, 0);
   const activeDevice = devices.find((d) => d.status === "active");
+  const pausedDevice = devices.find((d) => (d.status as string) === "paused");
   const disabledDevice = devices.find((d) => d.status === "disabled");
-  const deviceStatus = activeDevice ? "Online" : disabledDevice ? "Disabled" : "Offline";
+  const deviceStatus = activeDevice ? "Online" : pausedDevice ? "Paused" : disabledDevice ? "Disabled" : "Offline";
 
   if (loading) {
     return (
@@ -58,13 +59,21 @@ export default function DashboardOverview() {
       {/* Stats */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard label="Messages Sent" value={totalSent} icon={Send} />
-        <StatCard
-          label="Device Status"
-          value={deviceStatus}
-          icon={Smartphone}
-          iconBg={activeDevice ? "bg-green-50" : "bg-slate-100"}
-          iconColor={activeDevice ? "text-green-600" : "text-slate-500"}
-        />
+        <div>
+          <StatCard
+            label="Device Status"
+            value={deviceStatus}
+            icon={Smartphone}
+            iconBg={activeDevice ? "bg-green-50" : "bg-slate-100"}
+            iconColor={activeDevice ? "text-green-600" : "text-slate-500"}
+          />
+          {pausedDevice && (
+            <p className="mt-2 flex items-start gap-1.5 px-1 text-xs leading-relaxed text-amber-700">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              Gateway is off — turn on &apos;Gateway Active&apos; in the Android app to resume.
+            </p>
+          )}
+        </div>
         <StatCard label="Current Plan" value={planName} icon={CreditCard} iconBg="bg-purple-50" iconColor="text-purple-600" />
         <StatCard label="Campaigns" value={campaigns.length} icon={MessageSquare} iconBg="bg-amber-50" iconColor="text-amber-600" />
       </div>

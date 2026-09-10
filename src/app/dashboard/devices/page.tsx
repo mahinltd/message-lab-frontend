@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Smartphone, Plus, Battery, Wifi, Loader2, Unplug,
+  Smartphone, Plus, Battery, Wifi, Loader2, Unplug, Info, Link2, Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { ConnectDeviceModal } from "@/app/dashboard/ConnectDeviceModal";
+import { ReconnectDeviceModal } from "@/components/dashboard/ReconnectDeviceModal";
+import { DeleteDeviceModal } from "@/components/dashboard/DeleteDeviceModal";
 import { DeviceService } from "@/lib/device";
 import { Device } from "@/types";
 import { timeAgo } from "@/lib/utils";
@@ -18,6 +20,8 @@ export default function DevicesPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
+  const [reconnectDevice, setReconnectDevice] = useState<Device | null>(null);
+  const [deleteDevice, setDeleteDevice] = useState<Device | null>(null);
 
   const load = async () => {
     try {
@@ -74,6 +78,7 @@ export default function DevicesPage() {
         <div>
           <h2 className="text-xl font-bold text-slate-900">Your Devices</h2>
           <p className="text-sm text-slate-500 mt-1">Manage the Android devices connected to your account.</p>
+          <p className="text-xs text-slate-500 mt-2">Paused and connected devices occupy a device slot. Disconnected devices can be reconnected or deleted.</p>
         </div>
         <Button size="md" className="gap-2" onClick={() => setModalOpen(true)}>
           <Plus className="w-4 h-4" /> Connect Device
@@ -132,14 +137,32 @@ export default function DevicesPage() {
 
               {/* Actions */}
               <div className="mt-5 pt-4 border-t border-slate-100">
-                <button
-                  onClick={() => handleDisconnect(device._id)}
-                  disabled={disconnecting === device._id}
-                  className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
-                >
-                  <Unplug className="w-4 h-4" />
-                  {disconnecting === device._id ? "Disconnecting..." : "Disconnect"}
-                </button>
+                {(device.status === "active" || device.status === "offline") && (
+                  <button
+                    onClick={() => handleDisconnect(device._id)}
+                    disabled={disconnecting === device._id}
+                    className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
+                  >
+                    <Unplug className="w-4 h-4" />
+                    {disconnecting === device._id ? "Disconnecting..." : "Disconnect"}
+                  </button>
+                )}
+                {(device.status as string) === "paused" && (
+                  <p className="flex items-start gap-2 text-xs leading-relaxed text-amber-700">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                    Gateway is off — turn on &apos;Gateway Active&apos; in the Android app to resume.
+                  </p>
+                )}
+                {device.status === "disabled" && (
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setReconnectDevice(device)}>
+                      <Link2 className="h-4 w-4" /> Reconnect
+                    </Button>
+                    <Button variant="ghost" size="sm" className="gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700" onClick={() => setDeleteDevice(device)}>
+                      <Trash2 className="h-4 w-4" /> Delete
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -151,6 +174,22 @@ export default function DevicesPage() {
         onClose={() => setModalOpen(false)}
         onConnected={load}
       />
+      {reconnectDevice && (
+        <ReconnectDeviceModal
+          open={!!reconnectDevice}
+          onClose={() => setReconnectDevice(null)}
+          device={reconnectDevice}
+          onConnected={load}
+        />
+      )}
+      {deleteDevice && (
+        <DeleteDeviceModal
+          open={!!deleteDevice}
+          onClose={() => setDeleteDevice(null)}
+          device={deleteDevice}
+          onDeleted={load}
+        />
+      )}
     </div>
   );
 }

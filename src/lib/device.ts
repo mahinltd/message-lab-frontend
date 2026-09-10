@@ -1,6 +1,13 @@
 import { api } from "@/lib/api";
 import { Device, PairingCodeResponse } from "@/types";
 
+export interface ResumeCodeResponse {
+  code: string;
+  qrCodeDataUrl: string;
+  expiresAt: string;
+  expiresInMinutes: number;
+}
+
 export function getDeviceIdentity(device: Device): string {
   return device.deviceId || device.androidDeviceId || device._id;
 }
@@ -40,6 +47,16 @@ export class DeviceService {
   }
 
   static async disconnect(deviceId: string): Promise<void> {
-    await api.delete(`/devices/${deviceId}`);
+    await api.post(`/devices/${deviceId}/disconnect`);
+  }
+
+  static async generateResumeCode(deviceId: string): Promise<ResumeCodeResponse> {
+    const res = await api.post(`/devices/${deviceId}/resume-code`);
+    return res.data.data;
+  }
+
+  static async deleteDevice(deviceId: string): Promise<{ success: boolean; message: string }> {
+    const res = await api.delete(`/devices/${deviceId}`);
+    return res.data;
   }
 }
