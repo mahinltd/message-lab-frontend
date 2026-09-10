@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   },
   description:
     "Turn your Android phone into a personal SMS gateway. Send, receive, and manage SMS through your own device.",
+  icons: {
+    icon: [{ url: "/icon.svg?v=2", type: "image/svg+xml" }],
+    shortcut: "/icon.svg?v=2",
+    apple: "/icon.svg?v=2",
+  },
 };
 
 export default function RootLayout({

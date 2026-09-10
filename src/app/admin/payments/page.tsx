@@ -8,17 +8,18 @@ import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AdminService } from "@/lib/admin";
-import { timeAgo } from "@/lib/utils";
 import { toast } from "sonner";
+import { AdminPayment } from "@/types";
+import { getApiErrorMessage } from "@/lib/utils";
 
 export default function AdminPaymentsPage() {
-  const [payments, setPayments] = useState<any[]>([]);
+  const [payments, setPayments] = useState<AdminPayment[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [status, setStatus] = useState("");
 
-  const [selected, setSelected] = useState<any>(null);
+  const [selected, setSelected] = useState<AdminPayment | null>(null);
   const [action, setAction] = useState<"approve" | "reject">("approve");
   const [note, setNote] = useState("");
   const [reason, setReason] = useState("");
@@ -26,7 +27,6 @@ export default function AdminPaymentsPage() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const data = await AdminService.getPayments({
         page,
@@ -42,10 +42,21 @@ export default function AdminPaymentsPage() {
   }, [page, status]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    let cancelled = false;
+    AdminService.getPayments({ page, limit: 15, status: status || undefined })
+      .then((data) => {
+        if (cancelled) return;
+        setPayments(data.payments || []);
+        setPages(data.pagination?.pages || 1);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [page, status]);
 
-  const openReview = (p: any, a: "approve" | "reject") => {
+  const openReview = (p: AdminPayment, a: "approve" | "reject") => {
     setSelected(p);
     setAction(a);
     setNote("");
@@ -68,8 +79,8 @@ export default function AdminPaymentsPage() {
       toast.success(action === "approve" ? "Payment approved & subscription activated" : "Payment rejected");
       setSelected(null);
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Review failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Review failed"));
     } finally {
       setBusy(false);
     }

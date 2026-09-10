@@ -12,7 +12,7 @@ import Link from "next/link";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { user, setUser, setAccessToken, logout } = useAuthStore();
+  const { setUser, setAccessToken, logout } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);

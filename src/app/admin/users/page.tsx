@@ -1,19 +1,21 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, Loader2, Users } from "lucide-react";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { Pagination } from "@/components/ui/pagination";
 import { AdminService } from "@/lib/admin";
 import { timeAgo, getInitials } from "@/lib/utils";
+import { AdminUser } from "@/types";
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const router = useRouter();
 
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("");
@@ -127,7 +129,7 @@ export default function AdminUsersPage() {
                 <tbody className="divide-y divide-slate-100">
                   {users.map((u) => (
                     <tr key={u._id} className="hover:bg-slate-50 cursor-pointer">
-                      <td className="px-6 py-3" onClick={() => (window.location.href = `/admin/users/${u._id}`)}>
+                      <td className="px-6 py-3" onClick={() => router.push(`/admin/users/${u._id}`)}>
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                             {getInitials(u.name)}

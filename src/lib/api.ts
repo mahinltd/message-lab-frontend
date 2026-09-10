@@ -78,7 +78,7 @@ api.interceptors.response.use(
         // Refresh failed — clean up and redirect
         localStorage.removeItem("accessToken");
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.location.replace("/login");
         }
         return Promise.reject(refreshError);
       } finally {

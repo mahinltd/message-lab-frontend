@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { PageContent } from "@/types";
 import { publicApi } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/utils";
 
 interface ContentState {
   content: PageContent | null;
@@ -19,9 +20,9 @@ export const useContentStore = create<ContentState>((set) => ({
       set({ isLoading: true, error: null });
       const { data } = await publicApi.get("/public/content");
       set({ content: data.data, isLoading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.message || "Failed to load content",
+        error: getApiErrorMessage(error, "Failed to load content"),
         isLoading: false,
       });
     }

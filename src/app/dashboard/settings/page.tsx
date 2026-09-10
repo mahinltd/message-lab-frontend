@@ -8,7 +8,6 @@ import { useAuthStore } from "@/stores/authStore";
 
 export default function SettingsPage() {
   const { user } = useAuthStore();
-  const isGoogleOnly = user?.profilePicture && !user?.isMobileVerified && user?.mobile === null;
 
   return (
     <div className="max-w-3xl space-y-8">

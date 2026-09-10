@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AccountService } from "@/lib/account";
 import { useAuthStore } from "@/stores/authStore";
+import { getApiErrorMessage } from "@/lib/utils";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50),
@@ -50,8 +51,8 @@ export function ProfileForm() {
       });
       updateUser(res.user);
       toast.success("Profile updated successfully");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Update failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Update failed"));
     } finally {
       setIsLoading(false);
     }

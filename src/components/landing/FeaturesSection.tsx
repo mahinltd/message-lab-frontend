@@ -30,7 +30,9 @@ export function FeaturesSection() {
   }
 
   const features = [...(content?.features || [])].sort(
-    (a, b) => (a.metadata?.order ?? 0) - (b.metadata?.order ?? 0)
+    (a, b) =>
+      (typeof a.metadata?.order === "number" ? a.metadata.order : 0) -
+      (typeof b.metadata?.order === "number" ? b.metadata.order : 0)
   );
 
   return (
@@ -56,7 +58,10 @@ export function FeaturesSection() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => {
-            const Icon = iconMap[feature.metadata?.icon] || Smartphone;
+            const icon = typeof feature.metadata?.icon === "string"
+              ? feature.metadata.icon
+              : "";
+            const Icon = iconMap[icon] || Smartphone;
             return (
               <motion.div
                 key={feature.key}

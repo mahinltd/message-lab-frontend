@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BillingService } from "@/lib/billing";
 import { PlanConfig } from "@/types";
+import { getApiErrorMessage } from "@/lib/utils";
 
 const paymentSchema = z.object({
   paymentMethod: z.enum(["bkash", "nagad", "rocket"], {
@@ -47,7 +48,7 @@ export function PaymentForm({ plan, onSuccess, onCancel }: PaymentFormProps) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<FormInput>({
@@ -55,7 +56,7 @@ export function PaymentForm({ plan, onSuccess, onCancel }: PaymentFormProps) {
     defaultValues: { paymentMethod: "bkash" },
   });
 
-  const selected = watch("paymentMethod");
+  const selected = useWatch({ control, name: "paymentMethod" });
 
   const onSubmit = async (data: FormInput) => {
     setIsLoading(true);
@@ -70,8 +71,8 @@ export function PaymentForm({ plan, onSuccess, onCancel }: PaymentFormProps) {
       });
       toast.success("Payment submitted! Admin will review it shortly.");
       onSuccess();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Payment submission failed.");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Payment submission failed."));
     } finally {
       setIsLoading(false);
     }

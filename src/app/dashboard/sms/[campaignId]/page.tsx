@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2, ArrowLeft, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,12 @@ import { SmsService } from "@/lib/sms";
 import { SmsCampaign, SmsJob } from "@/types";
 import { timeAgo } from "@/lib/utils";
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/utils";
 
 const ACTIVE_STATUSES = ["queued", "processing", "paused"];
 
 export default function CampaignDetailsPage() {
   const params = useParams();
-  const router = useRouter();
   const campaignId = params.campaignId as string;
 
   const [campaign, setCampaign] = useState<SmsCampaign | null>(null);
@@ -24,7 +24,7 @@ export default function CampaignDetailsPage() {
   const [cancelling, setCancelling] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       const [camp, jobsRes] = await Promise.all([
         SmsService.getCampaign(campaignId),
@@ -38,14 +38,27 @@ export default function CampaignDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [campaignId]);
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    Promise.all([
+      SmsService.getCampaign(campaignId),
+      SmsService.getCampaignJobs(campaignId, 1, 100),
+    ])
+      .then(([campaignData, jobsRes]) => {
+        if (cancelled) return;
+        setCampaign(campaignData);
+        setJobs(jobsRes.jobs || []);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => {
+      cancelled = true;
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaignId]);
 
   // Auto-refresh while campaign is active
@@ -71,8 +84,8 @@ export default function CampaignDetailsPage() {
       await SmsService.cancelCampaign(campaignId);
       toast.success("Campaign cancelled");
       load();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to cancel");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to cancel"));
     } finally {
       setCancelling(false);
     }

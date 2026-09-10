@@ -9,6 +9,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { AdminService } from "@/lib/admin";
 import { timeAgo } from "@/lib/utils";
+import { AdminUser } from "@/types";
 
 interface Stats {
   totalUsers: number;
@@ -31,7 +32,7 @@ interface PaymentStats {
 export default function AdminOverview() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [payStats, setPayStats] = useState<PaymentStats | null>(null);
-  const [recentUsers, setRecentUsers] = useState<any[]>([]);
+  const [recentUsers, setRecentUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -132,7 +133,7 @@ export default function AdminOverview() {
             </Link>
           </div>
           <div className="divide-y divide-slate-100">
-            {recentUsers.slice(0, 6).map((u: any) => (
+            {recentUsers.slice(0, 6).map((u) => (
               <Link
                 key={u._id}
                 href={`/admin/users/${u._id}`}

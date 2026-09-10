@@ -5,10 +5,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AuthService } from "@/lib/auth";
 import { useAuthStore } from "@/stores/authStore";
+import { getApiErrorMessage } from "@/lib/utils";
 
 declare global {
+  interface GoogleIdentity {
+    initialize(options: { client_id?: string; callback: (response: { credential: string }) => void; auto_select: boolean; ux_mode: string }): void;
+    renderButton(container: HTMLElement, options: Record<string, string | number>): void;
+  }
+
   interface Window {
-    google?: any;
+    google?: { accounts?: { id?: GoogleIdentity } };
   }
 }
 
@@ -33,8 +39,8 @@ export function GoogleButton() {
         toast.success(`Welcome, ${res.data.user.name}!`);
         router.push("/dashboard");
       }
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Google login failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Google login failed"));
       handledRef.current = false;
     }
   };

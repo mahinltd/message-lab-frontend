@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Loader2, FileText, Plus, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AdminService } from "@/lib/admin";
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/utils";
 
 interface ContentItem {
   _id?: string;
@@ -14,7 +15,7 @@ interface ContentItem {
   category: string;
   title?: string | null;
   body?: string | null;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   isActive?: boolean;
 }
 
@@ -28,7 +29,6 @@ export default function AdminContentPage() {
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    setLoading(true);
     try {
       const data = await AdminService.getContent();
       setGrouped(data.grouped || {});
@@ -39,7 +39,16 @@ export default function AdminContentPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    AdminService.getContent()
+      .then((data) => {
+        if (!cancelled) setGrouped(data.grouped || {});
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const openEdit = (item: ContentItem) => {
@@ -71,8 +80,8 @@ export default function AdminContentPage() {
       toast.success("Content saved");
       setEditing(null);
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Save failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Save failed"));
     } finally {
       setBusy(false);
     }
@@ -84,8 +93,8 @@ export default function AdminContentPage() {
       await AdminService.deleteContent(key);
       toast.success("Content deleted");
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Delete failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Delete failed"));
     }
   };
 

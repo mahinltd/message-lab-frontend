@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Loader2, Inbox, CheckCheck, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
@@ -23,21 +23,20 @@ export default function InboxPage() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await SmsService.getInbox(page, 20);
-      setItems(data.items || []);
-      setPages(data.pagination?.pages || 1);
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, [page]);
-
   useEffect(() => {
-    load();
-  }, [load]);
+    let cancelled = false;
+    SmsService.getInbox(page, 20)
+      .then((data) => {
+        if (cancelled) return;
+        setItems(data.items || []);
+        setPages(data.pagination?.pages || 1);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [page]);
 
   const openMessage = async (item: IncomingItem) => {
     if (item.isRead) return;

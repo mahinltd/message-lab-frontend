@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { PlanUpsertInput } from "@/types";
 
 export class AdminService {
   /* ---------- Users ---------- */
@@ -77,7 +78,7 @@ export class AdminService {
     category: string;
     title?: string | null;
     body?: string | null;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     isActive?: boolean;
   }) {
     const res = await api.post("/admin/content", data);
@@ -95,7 +96,7 @@ export class AdminService {
     return res.data.data;
   }
 
-  static async upsertPlan(data: any) {
+  static async upsertPlan(data: PlanUpsertInput) {
     const res = await api.post("/admin/plans", data);
     return res.data;
   }
@@ -113,7 +114,7 @@ export class AdminService {
 
   static async upsertSetting(data: {
     key: string;
-    value: any;
+    value: unknown;
     valueType?: string;
     description?: string | null;
     category: string;

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { AuthService } from "@/lib/auth";
+import { getApiErrorMessage } from "@/lib/utils";
 
 const resendSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -22,8 +22,6 @@ type ResendInput = z.infer<typeof resendSchema>;
 export default function ResendVerificationPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -39,10 +37,8 @@ export default function ResendVerificationPage() {
       await AuthService.resendVerification(data.email);
       setSent(true);
       toast.success("Verification email sent! Check your inbox.");
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message || "Failed to send verification email.";
-      toast.error(message);
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to send verification email."));
     } finally {
       setIsLoading(false);
     }

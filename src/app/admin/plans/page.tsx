@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Loader2, Package, Pencil, Power } from "lucide-react";
+import { Loader2, Pencil, Power } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,15 +9,32 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { AdminService } from "@/lib/admin";
 import { PlanConfig } from "@/types";
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/utils";
+
+interface PlanEdit {
+  planId: string;
+  name: string;
+  displayName: string;
+  description: string | null;
+  priceMonthly: number | string;
+  priceYearly: number | string;
+  currency: string;
+  maxRecipientsPerCampaign: number | string;
+  maxDailyMessages: number | string;
+  maxDevices: number | string;
+  minSmsDelayMs: number | string;
+  featuresText: string;
+  isActive: boolean;
+  sortOrder: number | string;
+}
 
 export default function AdminPlansPage() {
   const [plans, setPlans] = useState<PlanConfig[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<any>(null);
+  const [editing, setEditing] = useState<PlanEdit | null>(null);
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    setLoading(true);
     try {
       const data = await AdminService.getPlans(true);
       setPlans(data.plans || []);
@@ -28,12 +45,22 @@ export default function AdminPlansPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    AdminService.getPlans(true)
+      .then((data) => {
+        if (!cancelled) setPlans(data.plans || []);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const openEdit = (p: PlanConfig) => {
     setEditing({
       ...p,
+      name: p.planId,
       featuresText: (p.features || []).join("\n"),
     });
   };
@@ -61,8 +88,8 @@ export default function AdminPlansPage() {
       toast.success("Plan saved");
       setEditing(null);
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Save failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Save failed"));
     } finally {
       setBusy(false);
     }
@@ -73,8 +100,8 @@ export default function AdminPlansPage() {
       await AdminService.togglePlan(planId);
       toast.success("Plan status toggled");
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Toggle failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Toggle failed"));
     }
   };
 

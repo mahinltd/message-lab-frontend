@@ -1,21 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Loader2, Settings as SettingsIcon, Pencil } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { AdminService } from "@/lib/admin";
 import { toast } from "sonner";
+import { AdminSetting } from "@/types";
+import { getApiErrorMessage } from "@/lib/utils";
 
-interface SettingItem {
-  _id?: string;
-  key: string;
-  value: any;
-  valueType: string;
-  description?: string | null;
-  category: string;
-}
+type SettingItem = AdminSetting;
 
 export default function AdminSettingsPage() {
   const [grouped, setGrouped] = useState<Record<string, SettingItem[]>>({});
@@ -25,7 +19,6 @@ export default function AdminSettingsPage() {
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    setLoading(true);
     try {
       const data = await AdminService.getSettings();
       const groupedMap: Record<string, SettingItem[]> = {};
@@ -41,7 +34,22 @@ export default function AdminSettingsPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    AdminService.getSettings()
+      .then((data) => {
+        if (cancelled) return;
+        const groupedMap: Record<string, SettingItem[]> = {};
+        for (const setting of data.settings || []) {
+          if (!groupedMap[setting.category]) groupedMap[setting.category] = [];
+          groupedMap[setting.category].push(setting);
+        }
+        setGrouped(groupedMap);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const openEdit = (s: SettingItem) => {
@@ -53,7 +61,7 @@ export default function AdminSettingsPage() {
     if (!editing) return;
     setBusy(true);
 
-    let parsed: any = valueText;
+    let parsed: unknown = valueText;
     let valueType = "string";
     try {
       parsed = JSON.parse(valueText);
@@ -74,14 +82,14 @@ export default function AdminSettingsPage() {
       toast.success("Setting saved");
       setEditing(null);
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Save failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Save failed"));
     } finally {
       setBusy(false);
     }
   };
 
-  const preview = (v: any) => {
+  const preview = (v: unknown) => {
     if (typeof v === "boolean") return v ? "true" : "false";
     if (typeof v === "number") return String(v);
     if (typeof v === "string") return v.length > 40 ? v.slice(0, 40) + "..." : v;

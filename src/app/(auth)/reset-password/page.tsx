@@ -9,6 +9,7 @@ import { AuthCard } from "@/components/auth/AuthCard";
 import { Button } from "@/components/ui/button";
 import { PasswordField } from "@/components/auth/PasswordField";
 import { AuthService } from "@/lib/auth";
+import { getApiErrorMessage } from "@/lib/utils";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -40,8 +41,8 @@ function ResetPasswordForm() {
       setDone(true);
       toast.success("Password reset successfully!");
       setTimeout(() => router.push("/login"), 1800);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to reset password.");
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, "Failed to reset password."));
     } finally {
       setIsLoading(false);
     }

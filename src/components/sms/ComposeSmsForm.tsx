@@ -7,7 +7,7 @@ import { Send, Users, MessageSquare, AlertCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SmsService } from "@/lib/sms";
-import { parseRecipients, calculateSmsParts, cn } from "@/lib/utils";
+import { parseRecipients, calculateSmsParts, cn, getApiErrorMessage } from "@/lib/utils";
 
 interface ComposeSmsFormProps {
   maxRecipients: number;
@@ -55,8 +55,8 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
         mode === "single" ? "Message queued for sending!" : "Campaign created and queued!"
       );
       router.push(`/dashboard/sms/${result.campaignId}`);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to send.");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to send."));
     } finally {
       setIsLoading(false);
     }

@@ -7,15 +7,16 @@ import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { AdminService } from "@/lib/admin";
 import { timeAgo } from "@/lib/utils";
 import { toast } from "sonner";
+import { AdminJob, AdminJobLog } from "@/types";
+import { getApiErrorMessage } from "@/lib/utils";
 
 export default function AdminJobsPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<AdminJob[]>([]);
+  const [logs, setLogs] = useState<AdminJobLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState<string | null>(null);
 
   const load = async () => {
-    setLoading(true);
     try {
       const [j, l] = await Promise.all([
         AdminService.getJobs(),
@@ -30,7 +31,18 @@ export default function AdminJobsPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    Promise.all([AdminService.getJobs(), AdminService.getJobLogs(15)])
+      .then(([jobsData, logsData]) => {
+        if (cancelled) return;
+        setJobs(jobsData.jobs || []);
+        setLogs(logsData.logs || []);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const trigger = async (name: string) => {
@@ -39,8 +51,8 @@ export default function AdminJobsPage() {
       const res = await AdminService.triggerJob(name);
       toast.success(res?.message || `Job "${name}" triggered`);
       setTimeout(load, 1000);
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Trigger failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Trigger failed"));
     } finally {
       setTriggering(null);
     }
@@ -53,7 +65,7 @@ export default function AdminJobsPage() {
           <h2 className="text-xl font-bold text-slate-900">Scheduled Jobs</h2>
           <p className="text-sm text-slate-500 mt-1">Background tasks running on the server.</p>
         </div>
-        <Button variant="outline" size="md" className="gap-2" onClick={load}>
+        <Button variant="outline" size="md" className="gap-2" onClick={() => { setLoading(true); void load(); }}>
           <RefreshCw className="w-4 h-4" /> Refresh
         </Button>
       </div>

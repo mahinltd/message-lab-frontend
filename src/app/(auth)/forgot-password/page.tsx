@@ -11,6 +11,7 @@ import { AuthCard } from "@/components/auth/AuthCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthService } from "@/lib/auth";
+import { getApiErrorMessage } from "@/lib/utils";
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -34,8 +35,8 @@ export default function ForgotPasswordPage() {
       await AuthService.forgotPassword(data.email);
       setSent(true);
       toast.success("Reset link sent! Check your inbox.");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to send reset link.");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to send reset link."));
     } finally {
       setIsLoading(false);
     }

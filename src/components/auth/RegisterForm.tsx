@@ -14,6 +14,7 @@ import { AuthService } from "@/lib/auth";
 import { GoogleButton } from "./GoogleButton";
 import { AuthDivider } from "./AuthDivider";
 import { PasswordField } from "./PasswordField";
+import { getApiErrorMessage, getApiErrorStatus } from "@/lib/utils";
 
 const registerSchema = z
   .object({
@@ -74,9 +75,9 @@ export function RegisterForm() {
       setRegistrationSuccess(true);
       setRegisteredEmail(data.email);
       toast.success("Account created! Check your email to verify.");
-    } catch (error: any) {
-      const status = error.response?.status;
-      const message = error.response?.data?.message || "Registration failed.";
+    } catch (error: unknown) {
+      const status = getApiErrorStatus(error);
+      const message = getApiErrorMessage(error, "Registration failed.");
 
       if (status === 409) {
         setDuplicateEmail(data.email);

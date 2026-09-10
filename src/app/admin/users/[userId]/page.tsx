@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   Loader2, ArrowLeft, MailCheck, Ban, CheckCircle2, Shield, Smartphone, CreditCard,
@@ -9,15 +9,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { AdminService } from "@/lib/admin";
-import { formatDate, timeAgo, getInitials } from "@/lib/utils";
+import { formatDate, timeAgo, getInitials, getApiErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
+import { AdminAuditLog, Device, PaymentSubmission, Subscription, AdminUser } from "@/types";
+
+interface UserDetails {
+  user: AdminUser;
+  devices: Device[];
+  subscriptions: Subscription[];
+  payments: PaymentSubmission[];
+  recentAuditLogs: AdminAuditLog[];
+}
 
 export default function AdminUserDetails() {
   const params = useParams();
-  const router = useRouter();
   const userId = params.userId as string;
 
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -33,8 +41,18 @@ export default function AdminUserDetails() {
   };
 
   useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let cancelled = false;
+    AdminService.getUser(userId)
+      .then((userData) => {
+        if (!cancelled) setData(userData);
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Failed to load user");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [userId]);
 
   const handleVerify = async () => {
@@ -43,14 +61,15 @@ export default function AdminUserDetails() {
       await AdminService.verifyUserEmail(userId);
       toast.success("Email verified");
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed"));
     } finally {
       setBusy(null);
     }
   };
 
   const handleToggleStatus = async () => {
+    if (!data) return;
     const isDisabled = !data.user.isAccountDisabled;
     let reason = "";
     if (isDisabled) {
@@ -62,14 +81,15 @@ export default function AdminUserDetails() {
       await AdminService.updateUserStatus(userId, isDisabled, reason);
       toast.success(isDisabled ? "Account disabled" : "Account enabled");
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed"));
     } finally {
       setBusy(null);
     }
   };
 
   const handleToggleRole = async () => {
+    if (!data) return;
     const newRole = data.user.role === "admin" ? "user" : "admin";
     if (!confirm(`Change role to "${newRole}"?`)) return;
     setBusy("role");
@@ -77,8 +97,8 @@ export default function AdminUserDetails() {
       await AdminService.updateUserRole(userId, newRole);
       toast.success(`Role changed to ${newRole}`);
       load();
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Failed");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed"));
     } finally {
       setBusy(null);
     }
@@ -164,7 +184,7 @@ export default function AdminUserDetails() {
           </div>
           {devices?.length ? (
             <div className="divide-y divide-slate-100">
-              {devices.map((d: any) => (
+              {devices.map((d) => (
                 <div key={d._id} className="flex items-center justify-between px-6 py-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{d.deviceName}</p>
@@ -187,7 +207,7 @@ export default function AdminUserDetails() {
           </div>
           {subscriptions?.length ? (
             <div className="divide-y divide-slate-100">
-              {subscriptions.map((s: any) => (
+              {subscriptions.map((s) => (
                 <div key={s._id} className="flex items-center justify-between px-6 py-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{s.planName}</p>
@@ -211,7 +231,7 @@ export default function AdminUserDetails() {
           </div>
           {payments?.length ? (
             <div className="divide-y divide-slate-100">
-              {payments.map((p: any) => (
+              {payments.map((p) => (
                 <div key={p._id} className="flex items-center justify-between px-6 py-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-900 uppercase">{p.paymentMethod}</p>
@@ -233,7 +253,7 @@ export default function AdminUserDetails() {
           </div>
           {recentAuditLogs?.length ? (
             <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto">
-              {recentAuditLogs.map((l: any) => (
+              {recentAuditLogs.map((l) => (
                 <div key={l._id} className="px-6 py-3">
                   <p className="text-sm font-medium text-slate-900">{l.action}</p>
                   <p className="text-xs text-slate-500">{timeAgo(l.createdAt)}</p>

@@ -9,6 +9,7 @@ import { KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PasswordField } from "@/components/auth/PasswordField";
 import { AccountService } from "@/lib/account";
+import { getApiErrorMessage } from "@/lib/utils";
 
 const schema = z
   .object({
@@ -50,8 +51,8 @@ export function ChangePasswordForm() {
       await AccountService.changePassword(data);
       toast.success("Password changed successfully");
       reset();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to change password");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to change password"));
     } finally {
       setIsLoading(false);
     }

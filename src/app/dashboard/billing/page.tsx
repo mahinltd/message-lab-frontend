@@ -36,7 +36,24 @@ export default function BillingPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    Promise.all([
+      BillingService.getPlans(),
+      BillingService.getSubscription().catch(() => null),
+      BillingService.getPayments(),
+    ])
+      .then(([plansRes, subRes, payRes]) => {
+        if (cancelled) return;
+        setPlans(plansRes || []);
+        if (subRes?.subscription) setSubscription(subRes.subscription);
+        if (subRes?.currentPlan?.planId) setCurrentPlanId(subRes.currentPlan.planId);
+        setPayments(payRes || []);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   if (loading) {

@@ -177,7 +177,7 @@ export interface PlanConfig {
 export interface SiteContentItem {
   title: string | null;
   body: string | null;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PageContent {
@@ -191,7 +191,7 @@ export interface PageContent {
     key: string;
     title: string | null;
     body: string | null;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }>;
   pricing: {
     sectionContent: Record<string, SiteContentItem>;
@@ -200,10 +200,88 @@ export interface PageContent {
 }
 
 // --- API Response Types ---
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data: T;
+}
+
+export interface AdminUser extends Omit<User, "id" | "createdAt"> {
+  _id: string;
+  createdAt: string;
+  isAccountDisabled: boolean;
+}
+
+export interface AdminPayment extends Omit<PaymentSubmission, "userId"> {
+  userId: Pick<User, "name" | "email">;
+}
+
+export interface AdminContentItem extends SiteContentItem {
+  _id?: string;
+  key: string;
+  category: string;
+  isActive?: boolean;
+}
+
+export interface AdminSetting {
+  _id?: string;
+  key: string;
+  value: unknown;
+  valueType: string;
+  description?: string | null;
+  category: string;
+}
+
+export interface PlanUpsertInput {
+  planId: string;
+  name?: string;
+  displayName: string;
+  description?: string | null;
+  priceMonthly: number;
+  priceYearly: number;
+  currency: string;
+  maxRecipientsPerCampaign: number;
+  maxDailyMessages: number;
+  maxDevices: number;
+  minSmsDelayMs: number;
+  features: string[];
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface AdminJob {
+  name: string;
+  isRunning: boolean;
+  lastExecution?: {
+    startedAt: string;
+    result?: { success: boolean; message?: string; affectedCount?: number };
+  };
+}
+
+export interface AdminJobLog {
+  jobName: string;
+  startedAt: string;
+  result?: { success: boolean; message?: string };
+}
+
+export interface AdminAuditLog {
+  _id: string;
+  action: string;
+  createdAt: string;
+  user?: Pick<User, "name" | "email">;
+  details?: Record<string, unknown>;
+  entityType?: string;
+  ipAddress?: string;
+}
+
+export interface AdminSecurityEvent {
+  _id: string;
+  type: string;
+  createdAt: string;
+  details?: Record<string, unknown>;
+  eventType: string;
+  severity: string;
+  description?: string;
 }
 
 export interface PaginatedResponse<T> {

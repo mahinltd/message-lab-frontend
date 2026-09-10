@@ -2,12 +2,13 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Smartphone, CheckCircle2, Loader2, QrCode } from "lucide-react";
+import { X, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeviceService } from "@/lib/device";
 import { PairingCodeResponse } from "@/types";
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/utils";
 
 interface ConnectDeviceModalProps {
   open: boolean;
@@ -34,15 +35,15 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
     timerRef.current = null;
   };
 
-  useEffect(() => {
-    if (!open) {
-      cleanup();
-      setStep("name");
-      setDeviceName("");
-      setPairing(null);
-    }
-    return cleanup;
-  }, [open]);
+  useEffect(() => cleanup, []);
+
+  const handleClose = () => {
+    cleanup();
+    setStep("name");
+    setDeviceName("");
+    setPairing(null);
+    onClose();
+  };
 
   const startPolling = () => {
     generatedAtRef.current = Date.now();
@@ -58,7 +59,7 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
           toast.success("Device connected successfully!");
           setTimeout(() => {
             onConnected();
-            onClose();
+            handleClose();
           }, 1200);
         }
       } catch {
@@ -89,8 +90,8 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
           return s - 1;
         });
       }, 1000);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to generate pairing code");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to generate pairing code"));
     } finally {
       setLoading(false);
     }
@@ -103,7 +104,7 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
     <AnimatePresence>
       {open && (
         <>
-          <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
+          <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm" onClick={handleClose} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 12 }}
@@ -114,7 +115,7 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
                 <h2 className="text-base font-bold text-slate-900">Connect Device</h2>
-                <button onClick={onClose} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100">
+                <button onClick={handleClose} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100">
                   <X className="w-5 h-5" />
                 </button>
               </div>

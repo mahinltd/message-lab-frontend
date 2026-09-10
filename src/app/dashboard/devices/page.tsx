@@ -11,6 +11,7 @@ import { DeviceService } from "@/lib/device";
 import { Device } from "@/types";
 import { timeAgo } from "@/lib/utils";
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/utils";
 
 export default function DevicesPage() {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -30,7 +31,18 @@ export default function DevicesPage() {
   };
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    DeviceService.getDevices()
+      .then((data) => {
+        if (!cancelled) setDevices(data || []);
+      })
+      .catch(() => {
+        if (!cancelled) toast.error("Failed to load devices");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const handleDisconnect = async (id: string) => {
@@ -40,8 +52,8 @@ export default function DevicesPage() {
       await DeviceService.disconnect(id);
       toast.success("Device disconnected");
       load();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to disconnect");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to disconnect"));
     } finally {
       setDisconnecting(null);
     }

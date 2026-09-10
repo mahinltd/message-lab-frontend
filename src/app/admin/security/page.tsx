@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Loader2, ShieldAlert, FileText } from "lucide-react";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { Pagination } from "@/components/ui/pagination";
 import { AdminService } from "@/lib/admin";
 import { timeAgo } from "@/lib/utils";
+import { AdminAuditLog, AdminSecurityEvent } from "@/types";
 import { cn } from "@/lib/utils";
 
 type Tab = "audit" | "events";
@@ -19,33 +20,30 @@ const severityBadge: Record<string, string> = {
 
 export default function AdminSecurityPage() {
   const [tab, setTab] = useState<Tab>("audit");
-  const [audit, setAudit] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const [audit, setAudit] = useState<AdminAuditLog[]>([]);
+  const [events, setEvents] = useState<AdminSecurityEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      if (tab === "audit") {
-        const data = await AdminService.getAuditLogs({ page, limit: 20 });
-        setAudit(data.logs || data.items || []);
-        setPages(data.pagination?.pages || 1);
-      } else {
-        const data = await AdminService.getSecurityEvents({ page, limit: 20 });
-        setEvents(data.events || data.items || []);
-        setPages(data.pagination?.pages || 1);
-      }
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, [tab, page]);
-
   useEffect(() => {
-    load();
-  }, [load]);
+    let cancelled = false;
+    const request = tab === "audit"
+      ? AdminService.getAuditLogs({ page, limit: 20 })
+      : AdminService.getSecurityEvents({ page, limit: 20 });
+    request
+      .then((data) => {
+        if (cancelled) return;
+        if (tab === "audit") setAudit(data.logs || data.items || []);
+        else setEvents(data.events || data.items || []);
+        setPages(data.pagination?.pages || 1);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [tab, page]);
 
   return (
     <div className="space-y-6">

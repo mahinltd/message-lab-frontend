@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2, MailCheck, AlertTriangle } from "lucide-react";
+import { MailCheck, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthService } from "@/lib/auth";
@@ -15,6 +15,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { GoogleButton } from "./GoogleButton";
 import { AuthDivider } from "./AuthDivider";
 import { PasswordField } from "./PasswordField";
+import { getApiErrorMessage, getApiErrorStatus } from "@/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -53,9 +54,9 @@ export function LoginForm() {
         toast.success("Welcome back!");
         router.push("/dashboard");
       }
-    } catch (error: any) {
-      const status = error.response?.status;
-      const message = error.response?.data?.message || "Login failed.";
+    } catch (error: unknown) {
+      const status = getApiErrorStatus(error);
+      const message = getApiErrorMessage(error, "Login failed.");
 
       if (status === 403 && message.toLowerCase().includes("verif")) {
         // Email not verified
@@ -74,8 +75,8 @@ export function LoginForm() {
     try {
       await AuthService.resendVerification(unverifiedEmail);
       toast.success("Verification email sent! Check your inbox.");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to resend.");
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Failed to resend."));
     } finally {
       setResending(false);
     }

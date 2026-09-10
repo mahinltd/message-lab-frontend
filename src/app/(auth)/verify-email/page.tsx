@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Loader2, CheckCircle2, XCircle, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthService } from "@/lib/auth";
+import { getApiErrorMessage } from "@/lib/utils";
 
 type Status = "loading" | "success" | "error";
 
@@ -27,11 +28,9 @@ function VerifyEmailContent() {
         const res = await AuthService.verifyEmail(token);
         setStatus("success");
         setMessage(res.message || "Email verified successfully!");
-      } catch (error: any) {
+      } catch (error: unknown) {
         setStatus("error");
-        setMessage(
-          error.response?.data?.message || "Verification failed. The link may have expired."
-        );
+        setMessage(getApiErrorMessage(error, "Verification failed. The link may have expired."));
       }
     }
     verify();
