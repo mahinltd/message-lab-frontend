@@ -1,90 +1,188 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { Globe, Link2, MessageSquare } from "lucide-react";
+import { MessageSquare, Mail, Home } from "lucide-react";
+import { useContentStore } from "@/stores/contentStore";
 
-const footerLinks = {
-  Product: [
-    { name: "Features", href: "#features" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "How It Works", href: "#how-it-works" },
-  ],
-  Company: [
-    { name: "About", href: "/about" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
-  ],
-  Legal: [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms of Service", href: "/terms" },
-    { name: "Anti-Spam Policy", href: "/anti-spam" },
-  ],
-  Support: [
-    { name: "Help Center", href: "/help" },
-    { name: "Documentation", href: "/docs" },
-    { name: "Status", href: "/status" },
-  ],
-};
+interface FooterLink {
+  name: string;
+  href: string;
+  external?: boolean;
+  anchor?: boolean;
+}
 
-const socialLinks = [
-  { name: "GitHub", icon: Link2, href: "#" },
-  { name: "Twitter", icon: Globe, href: "#" },
-  { name: "LinkedIn", icon: Link2, href: "#" },
+const footerColumns: { title: string; links: FooterLink[] }[] = [
+  {
+    title: "Product",
+    links: [
+      { name: "Features", href: "/features", anchor: true },
+      { name: "Pricing", href: "/pricing", anchor: true },
+      { name: "How It Works", href: "/how-it-works", anchor: true },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { name: "About", href: "/about" },
+      { name: "Blog", href: "/blog" },
+      { name: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Terms of Service", href: "/terms" },
+      { name: "Anti-Spam Policy", href: "/anti-spam" },
+    ],
+  },
+  {
+    title: "Support",
+    links: [
+      { name: "Help Center", href: "/help" },
+      { name: "Documentation", href: "/docs" },
+      { name: "Status", href: "/status" },
+      { name: "Contact Support", href: "/support" },
+    ],
+  },
 ];
 
 export function Footer() {
-  return (
-    <footer className="bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-12 lg:py-16 grid grid-cols-2 md:grid-cols-6 gap-8">
-          {/* Brand */}
-          <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <MessageSquare className="w-[18px] h-[18px] text-white" />
-              </div>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
-                Messages<span className="text-indigo-600 dark:text-indigo-400">Lab</span>
-              </span>
-            </Link>
-            <p className="text-sm text-gray-600 dark:text-gray-400 max-w-xs leading-relaxed">
-              Turn your Android phone into a personal SMS gateway. Send, receive, and manage SMS through your own device.
-            </p>
-            <div className="flex items-center gap-3 mt-6">
-              {socialLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"
-                  aria-label={link.name}
-                >
-                  <link.icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
-          </div>
+  const { content, fetchContent } = useContentStore();
 
-          {/* Links */}
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link.name}>
-                    <Link href={link.href} className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+  useEffect(() => {
+    if (!content) fetchContent();
+  }, [content, fetchContent]);
+
+  // Dynamic content from admin panel
+  const description =
+    content?.footer?.footer_description?.body ||
+    content?.footer?.footer_description_text?.body ||
+    "Turn your Android phone into a personal SMS gateway. Send, receive, and manage SMS through your own device.";
+
+  const copyright =
+    content?.footer?.footer_copyright?.body ||
+    `© ${new Date().getFullYear()} Messages Lab. All rights reserved.`;
+
+  const tagline =
+    content?.footer?.footer_tagline?.body || "Made with ❤️ in Bangladesh";
+
+  const facebookUrl =
+    content?.footer?.footer_social_facebook?.body ||
+    "https://www.facebook.com/tanvir8268";
+
+  const supportEmail =
+    content?.footer?.footer_support_email?.body || "support@messagelab.tech";
+
+  // Handle anchor navigation smoothly
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      const top = target.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
+
+  return (
+    <footer className="bg-white border-t border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main Footer */}
+        <div className="py-12 lg:py-16">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
+            {/* Brand Column */}
+            <div className="col-span-2">
+              {/* Logo — separated from nav */}
+              <Link href="/" className="flex items-center gap-2.5 mb-4 group">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow">
+                  <MessageSquare className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-extrabold tracking-tight text-slate-900">
+                  Messages<span className="text-indigo-600">Lab</span>
+                </span>
+              </Link>
+
+              {/* Dynamic description */}
+              <p className="text-sm text-slate-600 max-w-xs leading-relaxed mb-6">
+                {description}
+              </p>
+
+              {/* Social Icons */}
+              <div className="flex items-center gap-2.5">
+                {/* Home */}
+                <Link
+                  href="/"
+                  className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200"
+                  aria-label="Home"
+                  title="Go to Homepage"
+                >
+                  <Home className="w-4.5 h-4.5" />
+                </Link>
+
+                {/* Facebook — Official Icon */}
+                <a
+                  href={facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-[#1877F2] hover:text-white transition-all duration-200"
+                  aria-label="Facebook"
+                  title="Follow us on Facebook"
+                >
+                  <span className="text-sm font-bold" aria-hidden="true">f</span>
+                </a>
+
+                {/* Email — Official Icon */}
+                <a
+                  href={`mailto:${supportEmail}?subject=Messages Lab Support`}
+                  className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-600 hover:text-white transition-all duration-200"
+                  aria-label="Email Us"
+                  title={`Email: ${supportEmail}`}
+                >
+                  <Mail className="w-4.5 h-4.5" />
+                </a>
+              </div>
             </div>
-          ))}
+
+            {/* Navigation Columns */}
+            {footerColumns.map((column) => (
+              <div key={column.title}>
+                <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide">
+                  {column.title}
+                </h3>
+                <ul className="space-y-3">
+                  {column.links.map((link) =>
+                    link.anchor ? (
+                      <li key={link.name}>
+                        <a
+                          href={link.href}
+                          onClick={(e) => handleAnchorClick(e, link.href)}
+                          className="text-sm text-slate-600 hover:text-indigo-600 transition-colors"
+                        >
+                          {link.name}
+                        </a>
+                      </li>
+                    ) : (
+                      <li key={link.name}>
+                        <Link
+                          href={link.href}
+                          className="text-sm text-slate-600 hover:text-indigo-600 transition-colors"
+                        >
+                          {link.name}
+                        </Link>
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="py-6 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            © {new Date().getFullYear()} Messages Lab. All rights reserved.
-          </p>
-          <p className="text-sm text-gray-400 dark:text-gray-500">Made with ❤️ in Bangladesh</p>
+        {/* Bottom Bar — Dynamic Copyright */}
+        <div className="py-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-sm text-slate-500">{copyright}</p>
+          <p className="text-sm text-slate-400">{tagline}</p>
         </div>
       </div>
     </footer>

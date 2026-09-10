@@ -184,6 +184,8 @@ export interface PageContent {
   hero: Record<string, SiteContentItem>;
   header: Record<string, SiteContentItem>;
   footer: Record<string, SiteContentItem>;
+  legal: Record<string, SiteContentItem>;
+  pages: Record<string, SiteContentItem>;
   announcement: SiteContentItem | null;
   features: Array<{
     key: string;

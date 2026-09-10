@@ -32,3 +32,36 @@ body {
 @media (min-width: 1024px) {
   .section-padding { padding-top: 6.5rem; padding-bottom: 6.5rem; }
 }
+
+/* Prose typography for info pages */
+.prose {
+  line-height: 1.75;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.prose p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+.prose ul, .prose ol {
+  padding-left: 1.5em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.prose strong {
+  font-weight: 700;
+  color: var(--foreground);
+}
+.prose a {
+  color: #4f46e5;
+  text-decoration: none;
+}
+.prose a:hover {
+  text-decoration: underline;
+}
