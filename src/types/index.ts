@@ -42,6 +42,8 @@ export interface LoginInput {
 // --- Device Types ---
 export interface Device {
   _id: string;
+  deviceId?: string;
+  androidDeviceId?: string;
   userId: string;
   deviceName: string;
   deviceModel: string | null;

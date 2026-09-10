@@ -42,6 +42,8 @@ export default function DashboardOverview() {
 
   const totalSent = campaigns.reduce((s, c) => s + c.successCount, 0);
   const activeDevice = devices.find((d) => d.status === "active");
+  const disabledDevice = devices.find((d) => d.status === "disabled");
+  const deviceStatus = activeDevice ? "Online" : disabledDevice ? "Disabled" : "Offline";
 
   if (loading) {
     return (
@@ -58,7 +60,7 @@ export default function DashboardOverview() {
         <StatCard label="Messages Sent" value={totalSent} icon={Send} />
         <StatCard
           label="Device Status"
-          value={activeDevice ? "Online" : "Offline"}
+          value={deviceStatus}
           icon={Smartphone}
           iconBg={activeDevice ? "bg-green-50" : "bg-slate-100"}
           iconColor={activeDevice ? "text-green-600" : "text-slate-500"}

@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DeviceService } from "@/lib/device";
-import { PairingCodeResponse } from "@/types";
+import { DeviceService, getDeviceIdentity } from "@/lib/device";
+import { Device, PairingCodeResponse } from "@/types";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/utils";
 
@@ -26,7 +26,7 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
   const [secondsLeft, setSecondsLeft] = useState(0);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const generatedAtRef = useRef<number>(0);
+  const baselineDevicesRef = useRef<Map<string, Device>>(new Map());
 
   const cleanup = () => {
     if (pollRef.current) clearInterval(pollRef.current);
@@ -46,14 +46,20 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
   };
 
   const startPolling = () => {
-    generatedAtRef.current = Date.now();
     pollRef.current = setInterval(async () => {
       try {
         const devices = await DeviceService.getDevices();
-        const newDevice = devices.find(
-          (d) => new Date(d.connectedAt).getTime() > generatedAtRef.current - 2000
-        );
-        if (newDevice) {
+        const connectedDevice = devices.find((device) => {
+          const previous = baselineDevicesRef.current.get(getDeviceIdentity(device));
+          if (!previous) return true;
+
+          return (
+            device.status !== previous.status ||
+            device.connectedAt !== previous.connectedAt ||
+            device.lastSeenAt !== previous.lastSeenAt
+          );
+        });
+        if (connectedDevice) {
           cleanup();
           setStep("success");
           toast.success("Device connected successfully!");
@@ -76,6 +82,10 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
     setLoading(true);
     try {
       const result = await DeviceService.generatePairingCode(deviceName.trim());
+      const devices = await DeviceService.getDevices();
+      baselineDevicesRef.current = new Map(
+        devices.map((device) => [getDeviceIdentity(device), device])
+      );
       setPairing(result);
       setSecondsLeft(result.expiresInMinutes * 60);
       setStep("code");
