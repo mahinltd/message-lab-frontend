@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "Privacy Policy" };
+export const metadata: Metadata = { title: "Privacy Policy", description: "Read how MessagesLab handles account, device, SMS metadata, and usage information.", alternates: { canonical: `${siteConfig.url}/privacy` }, robots: { index: true, follow: true } };
 
 export default function PrivacyPage() {
   return (

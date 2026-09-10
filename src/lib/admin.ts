@@ -2,6 +2,14 @@ import { api } from "@/lib/api";
 import { PlanUpsertInput } from "@/types";
 
 export class AdminService {
+  static async revalidatePublicContent(): Promise<void> {
+    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    await fetch("/api/revalidate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ secret: process.env.NEXT_PUBLIC_REVALIDATE_SECRET || "" }),
+    });
+  }
   /* ---------- Users ---------- */
   static async getUsers(params: {
     page?: number;

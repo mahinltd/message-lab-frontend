@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
+import type { PageContent } from "@/types";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -13,7 +14,8 @@ const navLinks = [
   { name: "Pricing", href: "#pricing" },
 ];
 
-export function Navbar() {
+export function Navbar({ content }: { content: PageContent }) {
+  const brandName = content.header.site_name?.title || "MessagesLab";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { isAuthenticated } = useAuthStore();
@@ -41,7 +43,7 @@ export function Navbar() {
             <MessageSquare className="w-[18px] h-[18px] text-white" />
           </div>
           <span className="text-lg font-extrabold tracking-tight text-slate-900">
-            Messages<span className="text-indigo-600">Lab</span>
+            {brandName}
           </span>
         </Link>
 

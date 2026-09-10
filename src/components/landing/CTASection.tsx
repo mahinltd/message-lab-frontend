@@ -5,8 +5,11 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { PageContent } from "@/types";
 
-export function CTASection() {
+export function CTASection({ content }: { content: PageContent }) {
+  const title = content.pages.cta_title?.title || "Ready to Get Started?";
+  const description = content.pages.cta_description?.body || "Start using your own Android phone and SIM to send SMS from the web dashboard.";
   return (
     <section className="section-padding bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,10 +25,10 @@ export function CTASection() {
 
           <div className="relative max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Ready to Get Started?
+              {title}
             </h2>
             <p className="mt-4 text-lg text-indigo-100 leading-relaxed">
-              Join thousands of users who trust Messages Lab. Start free — no credit card required.
+              {description}
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register">

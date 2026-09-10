@@ -1,30 +1,22 @@
-"use client";
-
-import React, { useEffect } from "react";
+import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AnimatedBackground } from "@/components/layout/AnimatedBackground";
-import { useContentStore } from "@/stores/contentStore";
+import { fetchContent } from "@/lib/server/content";
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { content, fetchContent } = useContentStore();
-
-  useEffect(() => {
-    if (!content) {
-      fetchContent();
-    }
-  }, [content, fetchContent]);
+  const content = await fetchContent();
 
   return (
     <>
       <AnimatedBackground />
-      <Navbar />
+      <Navbar content={content} />
       <main className="min-h-screen">{children}</main>
-      <Footer />
+      <Footer content={content} />
     </>
   );
 }

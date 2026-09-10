@@ -80,6 +80,7 @@ export default function AdminSettingsPage() {
         category: editing.category,
       });
       toast.success("Setting saved");
+      void AdminService.revalidatePublicContent().catch(() => undefined);
       setEditing(null);
       load();
     } catch (error: unknown) {

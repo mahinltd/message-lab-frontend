@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "Contact Support" };
+export const metadata: Metadata = { title: "Contact Support", description: "Get help from MessagesLab support with device pairing, SMS sending, account, and service questions.", alternates: { canonical: `${siteConfig.url}/support` }, robots: { index: true, follow: true } };
 
 export default function SupportPage() {
   return (

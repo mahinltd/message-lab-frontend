@@ -78,6 +78,7 @@ export default function AdminContentPage() {
         isActive: editing.isActive ?? true,
       });
       toast.success("Content saved");
+      void AdminService.revalidatePublicContent().catch(() => undefined);
       setEditing(null);
       load();
     } catch (error: unknown) {
@@ -92,6 +93,7 @@ export default function AdminContentPage() {
     try {
       await AdminService.deleteContent(key);
       toast.success("Content deleted");
+      void AdminService.revalidatePublicContent().catch(() => undefined);
       load();
     } catch (error: unknown) {
       toast.error(getApiErrorMessage(error, "Delete failed"));

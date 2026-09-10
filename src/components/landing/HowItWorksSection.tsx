@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { UserPlus, Download, Link2, Send } from "lucide-react";
+import type { PageContent } from "@/types";
 
 const steps = [
   { icon: UserPlus, title: "Create an Account", desc: "Sign up for free and verify your email address." },
@@ -11,7 +12,8 @@ const steps = [
   { icon: Send, title: "Start Sending", desc: "Use the web dashboard to send SMS through your device." },
 ];
 
-export function HowItWorksSection() {
+export function HowItWorksSection({ content }: { content: PageContent }) {
+  const sectionTitle = content.pages.how_it_works_title?.title || "Get Started in 4 Simple Steps";
   return (
     <section id="how-it-works" className="section-padding bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,7 +28,7 @@ export function HowItWorksSection() {
             How It Works
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Get Started in <span className="gradient-text">4 Simple Steps</span>
+            {sectionTitle}
           </h2>
         </motion.div>
 

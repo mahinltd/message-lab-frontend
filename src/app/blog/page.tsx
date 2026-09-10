@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "Blog" };
+export const metadata: Metadata = { title: "Blog", description: "MessagesLab updates, tutorials, and practical guidance about personal SMS gateways and mobile messaging.", alternates: { canonical: `${siteConfig.url}/blog` }, robots: { index: true, follow: true } };
 
 export default function BlogPage() {
   return (

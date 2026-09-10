@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { Smartphone, Globe, LayoutDashboard, Users, Shield, Eye, Loader2 } from "lucide-react";
-import { useContentStore } from "@/stores/contentStore";
+import { Smartphone, Globe, LayoutDashboard, Users, Shield, Eye } from "lucide-react";
+import type { PageContent } from "@/types";
 
 const iconMap: Record<string, React.ElementType> = {
   smartphone: Smartphone,
@@ -14,21 +14,7 @@ const iconMap: Record<string, React.ElementType> = {
   eye: Eye,
 };
 
-export function FeaturesSection() {
-  const { content, isLoading, fetchContent } = useContentStore();
-
-  useEffect(() => {
-    if (!content) fetchContent();
-  }, [content, fetchContent]);
-
-  if (isLoading && !content) {
-    return (
-      <section className="section-padding">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto" />
-      </section>
-    );
-  }
-
+export function FeaturesSection({ content }: { content: PageContent }) {
   const features = [...(content?.features || [])].sort(
     (a, b) =>
       (typeof a.metadata?.order === "number" ? a.metadata.order : 0) -

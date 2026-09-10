@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "Anti-Spam Policy" };
+export const metadata: Metadata = { title: "Anti-Spam Policy", description: "Review the MessagesLab rules against unsolicited bulk messaging, abuse, fraud, and illegal use.", alternates: { canonical: `${siteConfig.url}/anti-spam` }, robots: { index: true, follow: true } };
 
 export default function AntiSpamPage() {
   return (

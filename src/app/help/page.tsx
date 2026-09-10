@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "Help Center" };
+export const metadata: Metadata = { title: "Help Center", description: "Find answers about MessagesLab accounts, Android device pairing, SMS campaigns, and common issues.", alternates: { canonical: `${siteConfig.url}/help` }, robots: { index: true, follow: true } };
 
 export default function HelpPage() {
   return (

@@ -86,6 +86,7 @@ export default function AdminPlansPage() {
         sortOrder: Number(editing.sortOrder) || 0,
       });
       toast.success("Plan saved");
+      void AdminService.revalidatePublicContent().catch(() => undefined);
       setEditing(null);
       load();
     } catch (error: unknown) {
@@ -99,6 +100,7 @@ export default function AdminPlansPage() {
     try {
       await AdminService.togglePlan(planId);
       toast.success("Plan status toggled");
+      void AdminService.revalidatePublicContent().catch(() => undefined);
       load();
     } catch (error: unknown) {
       toast.error(getApiErrorMessage(error, "Toggle failed"));

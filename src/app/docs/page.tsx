@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "Documentation" };
+export const metadata: Metadata = { title: "Documentation", description: "Read MessagesLab documentation for device pairing, campaign management, plans, and payments.", alternates: { canonical: `${siteConfig.url}/docs` }, robots: { index: true, follow: true } };
 
 export default function DocsPage() {
   return (

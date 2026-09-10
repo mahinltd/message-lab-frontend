@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "Terms of Service" };
+export const metadata: Metadata = { title: "Terms of Service", description: "Review the terms that govern use of the MessagesLab personal SMS gateway service.", alternates: { canonical: `${siteConfig.url}/terms` }, robots: { index: true, follow: true } };
 
 export default function TermsPage() {
   return (

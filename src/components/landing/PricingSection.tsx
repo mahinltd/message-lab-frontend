@@ -1,28 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Star, Loader2 } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useContentStore } from "@/stores/contentStore";
+import type { PageContent, PlanConfig } from "@/types";
 
-export function PricingSection() {
-  const { content, isLoading, fetchContent } = useContentStore();
-
-  useEffect(() => {
-    if (!content) fetchContent();
-  }, [content, fetchContent]);
-
-  if (isLoading && !content) {
-    return (
-      <section className="section-padding">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto" />
-      </section>
-    );
-  }
-
-  const plans = content?.pricing?.plans || [];
+export function PricingSection({ content, plans }: { content: PageContent; plans: PlanConfig[] }) {
   const note = content?.pricing?.sectionContent?.pricing_section_note?.body || "";
 
   return (

@@ -1,6 +1,8 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
 
-export const metadata = { title: "About Us" };
+export const metadata: Metadata = { title: "About Us", description: "Learn how MessagesLab gives users control of SMS through their own Android phone and SIM.", alternates: { canonical: `${siteConfig.url}/about` }, robots: { index: true, follow: true } };
 
 export default function AboutPage() {
   return (

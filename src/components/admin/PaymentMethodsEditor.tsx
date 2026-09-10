@@ -116,6 +116,7 @@ export function PaymentMethodsEditor() {
         category: "payment",
       });
       toast.success("Payment methods saved");
+      void AdminService.revalidatePublicContent().catch(() => undefined);
     } catch (error: unknown) {
       toast.error(getApiErrorMessage(error, "Failed to save payment methods"));
     } finally {

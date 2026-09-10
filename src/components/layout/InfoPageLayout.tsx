@@ -1,10 +1,9 @@
-"use client";
-
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useContentStore } from "@/stores/contentStore";
+import { fetchContent } from "@/lib/server/content";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 
 interface InfoPageLayoutProps {
   title: string;
@@ -13,17 +12,13 @@ interface InfoPageLayoutProps {
   lastUpdated?: string;
 }
 
-export function InfoPageLayout({
+export async function InfoPageLayout({
   title,
   contentKey,
   defaultContent,
   lastUpdated,
 }: InfoPageLayoutProps) {
-  const { content, fetchContent } = useContentStore();
-
-  useEffect(() => {
-    if (!content) fetchContent();
-  }, [content, fetchContent]);
+  const content = await fetchContent();
 
   const pageContent =
     content?.legal?.[contentKey]?.body ||
@@ -34,9 +29,18 @@ export function InfoPageLayout({
     content?.legal?.[contentKey]?.title ||
     content?.pages?.[contentKey]?.title ||
     title;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+      { "@type": "ListItem", position: 2, name: pageTitle },
+    ],
+  };
 
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       {/* Back to home */}
       <Link
         href="/"

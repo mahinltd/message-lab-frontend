@@ -1,19 +1,14 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardMockup } from "./DashboardMockup";
-import { useContentStore } from "@/stores/contentStore";
+import type { PageContent } from "@/types";
 
-export function HeroSection() {
-  const { content, fetchContent } = useContentStore();
-
-  useEffect(() => {
-    if (!content) fetchContent();
-  }, [content, fetchContent]);
+export function HeroSection({ content }: { content: PageContent }) {
 
   const badge = content?.hero?.hero_badge?.title || "Your Phone. Your SIM. Your Gateway.";
   const title = content?.hero?.hero_title?.title || "Turn Your Android Into a Personal SMS Gateway";

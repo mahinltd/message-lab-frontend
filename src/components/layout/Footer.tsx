@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { MessageSquare, Mail, Home } from "lucide-react";
-import { useContentStore } from "@/stores/contentStore";
+import type { PageContent } from "@/types";
 
 interface FooterLink {
   name: string;
@@ -48,12 +48,7 @@ const footerColumns: { title: string; links: FooterLink[] }[] = [
   },
 ];
 
-export function Footer() {
-  const { content, fetchContent } = useContentStore();
-
-  useEffect(() => {
-    if (!content) fetchContent();
-  }, [content, fetchContent]);
+export function Footer({ content }: { content: PageContent }) {
 
   // Dynamic content from admin panel
   const description =
