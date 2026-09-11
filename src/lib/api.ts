@@ -29,6 +29,17 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
+function markAuthError(error: unknown, flag: "transient" | "rate-limit") {
+  if (error && typeof error === "object") {
+    const typedError = error as { flag?: string; retryAfterSeconds?: number };
+    typedError.flag = flag;
+    const response = (error as { response?: { data?: { retryAfterSeconds?: unknown } } }).response;
+    const retryAfter = response?.data?.retryAfterSeconds;
+    if (typeof retryAfter === "number") typedError.retryAfterSeconds = retryAfter;
+  }
+  return error;
+}
+
 const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) prom.reject(error);
@@ -41,13 +52,23 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const status = error.response?.status;
+
+    if (status === 429) {
+      return Promise.reject(markAuthError(error, "rate-limit"));
+    }
+
+    if (!status || status >= 500) {
+      return Promise.reject(markAuthError(error, "transient"));
+    }
 
     // Only retry on 401 and only once
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/auth/refresh") &&
-      !originalRequest.url?.includes("/auth/login")
+      !originalRequest.url?.includes("/auth/login") &&
+      !originalRequest.url?.includes("/auth/logout")
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -74,11 +95,18 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
-        // Refresh failed — clean up and redirect
-        localStorage.removeItem("accessToken");
-        if (typeof window !== "undefined") {
-          window.location.replace("/login");
+        const refreshStatus = (refreshError as { response?: { status?: number } }).response?.status;
+        const classifiedRefreshError = refreshStatus === 429
+          ? markAuthError(refreshError, "rate-limit")
+          : refreshStatus === 401 || refreshStatus === 403
+            ? refreshError
+            : markAuthError(refreshError, "transient");
+        processQueue(classifiedRefreshError, null);
+        if (refreshStatus === 401 || refreshStatus === 403) {
+          localStorage.removeItem("accessToken");
+          if (typeof window !== "undefined") window.location.replace("/login");
+        } else {
+          markAuthError(refreshError, refreshStatus === 429 ? "rate-limit" : "transient");
         }
         return Promise.reject(refreshError);
       } finally {

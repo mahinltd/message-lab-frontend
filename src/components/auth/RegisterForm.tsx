@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
@@ -15,6 +15,7 @@ import { GoogleButton } from "./GoogleButton";
 import { AuthDivider } from "./AuthDivider";
 import { PasswordField } from "./PasswordField";
 import { getApiErrorMessage, getApiErrorStatus } from "@/lib/utils";
+import { TurnstileWidget } from "./TurnstileWidget";
 
 const registerSchema = z
   .object({
@@ -44,6 +45,11 @@ export function RegisterForm() {
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [duplicateEmail, setDuplicateEmail] = useState<string | null>(null);
+  const [captchaRequired, setCaptchaRequired] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [pendingData, setPendingData] = useState<RegisterFormInput | null>(null);
+  const [retrySeconds, setRetrySeconds] = useState(0);
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
   const router = useRouter();
 
   const {
@@ -62,7 +68,13 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = async (data: RegisterFormInput) => {
+  useEffect(() => {
+    if (retrySeconds <= 0) return;
+    const timer = window.setInterval(() => setRetrySeconds((seconds) => Math.max(0, seconds - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [retrySeconds]);
+
+  const onSubmit = async (data: RegisterFormInput, token = captchaToken) => {
     setIsLoading(true);
     setDuplicateEmail(null);
     try {
@@ -71,16 +83,29 @@ export function RegisterForm() {
         email: data.email,
         mobile: data.mobile,
         password: data.password,
-      });
+        ...(token ? { captchaToken: token } : {}),
+      } as RegisterFormInput);
       setRegistrationSuccess(true);
       setRegisteredEmail(data.email);
       toast.success("Account created! Check your email to verify.");
     } catch (error: unknown) {
       const status = getApiErrorStatus(error);
       const message = getApiErrorMessage(error, "Registration failed.");
+      const responseData = (error as { response?: { data?: { captchaRequired?: boolean; retryAfterSeconds?: number } } }).response?.data;
 
       if (status === 409) {
         setDuplicateEmail(data.email);
+      } else if (status === 428 || responseData?.captchaRequired) {
+        setCaptchaRequired(true);
+        setPendingData(data);
+        setCaptchaToken(null);
+        setCaptchaResetKey((key) => key + 1);
+      } else if (status === 429) {
+        const seconds = responseData?.retryAfterSeconds || 30;
+        setRetrySeconds(seconds);
+        toast.error(`Too many attempts — try again in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`);
+      } else if ((error as { flag?: string }).flag === "transient" || !status || status >= 500) {
+        toast.error("Connection issue. Please try again.");
       } else {
         toast.error(message);
       }
@@ -88,6 +113,17 @@ export function RegisterForm() {
       setIsLoading(false);
     }
   };
+
+  const handleCaptchaVerify = (token: string | null) => {
+    setCaptchaToken(token);
+    if (token && pendingData) {
+      const nextData = pendingData;
+      setPendingData(null);
+      void onSubmit(nextData, token);
+    }
+  };
+  const retryLabel = `${Math.floor(retrySeconds / 60)}:${String(retrySeconds % 60).padStart(2, "0")}`;
+  const handleFormSubmit = (data: RegisterFormInput) => { void onSubmit(data); };
 
   const handleResend = async () => {
     try {
@@ -149,7 +185,7 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <Input
         id="reg-name"
         type="text"
@@ -211,8 +247,12 @@ export function RegisterForm() {
         )}
       />
 
-      <Button type="submit" variant="primary" size="lg" className="w-full mt-2" isLoading={isLoading}>
-        {isLoading ? "Creating account..." : "Create Account"}
+      {captchaRequired && (
+        <TurnstileWidget key={captchaResetKey} onVerify={handleCaptchaVerify} onExpire={() => setCaptchaToken(null)} onError={() => { setCaptchaToken(null); toast.error("Security check failed. Please try again."); }} />
+      )}
+
+      <Button type="submit" variant="primary" size="lg" className="w-full mt-2" isLoading={isLoading} disabled={retrySeconds > 0}>
+        {isLoading ? "Creating account..." : retrySeconds > 0 ? `Try again in ${retryLabel}` : "Create Account"}
       </Button>
 
       <AuthDivider />

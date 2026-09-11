@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
@@ -16,6 +16,7 @@ import { GoogleButton } from "./GoogleButton";
 import { AuthDivider } from "./AuthDivider";
 import { PasswordField } from "./PasswordField";
 import { getApiErrorMessage, getApiErrorStatus } from "@/lib/utils";
+import { TurnstileWidget } from "./TurnstileWidget";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -28,6 +29,11 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
+  const [captchaRequired, setCaptchaRequired] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [pendingData, setPendingData] = useState<LoginFormInput | null>(null);
+  const [retrySeconds, setRetrySeconds] = useState(0);
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
   const { login } = useAuthStore();
   const router = useRouter();
 
@@ -44,11 +50,17 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = async (data: LoginFormInput) => {
+  useEffect(() => {
+    if (retrySeconds <= 0) return;
+    const timer = window.setInterval(() => setRetrySeconds((seconds) => Math.max(0, seconds - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [retrySeconds]);
+
+  const onSubmit = async (data: LoginFormInput, token = captchaToken) => {
     setIsLoading(true);
     setUnverifiedEmail(null);
     try {
-      const response = await AuthService.login(data);
+      const response = await AuthService.login({ ...data, ...(token ? { captchaToken: token } : {}) } as LoginFormInput);
       if (response.data.accessToken) {
         login(response.data.user, response.data.accessToken);
         toast.success("Welcome back!");
@@ -57,10 +69,22 @@ export function LoginForm() {
     } catch (error: unknown) {
       const status = getApiErrorStatus(error);
       const message = getApiErrorMessage(error, "Login failed.");
+      const responseData = (error as { response?: { data?: { captchaRequired?: boolean; retryAfterSeconds?: number } } }).response?.data;
 
       if (status === 403 && message.toLowerCase().includes("verif")) {
         // Email not verified
         setUnverifiedEmail(data.email);
+      } else if (status === 428 || responseData?.captchaRequired) {
+        setCaptchaRequired(true);
+        setPendingData(data);
+        setCaptchaToken(null);
+        setCaptchaResetKey((key) => key + 1);
+      } else if (status === 429) {
+        const seconds = responseData?.retryAfterSeconds || 30;
+        setRetrySeconds(seconds);
+        toast.error(`Too many attempts — try again in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`);
+      } else if ((error as { flag?: string }).flag === "transient" || !status || status >= 500) {
+        toast.error("Connection issue. Please try again.");
       } else {
         toast.error(message);
       }
@@ -68,6 +92,17 @@ export function LoginForm() {
       setIsLoading(false);
     }
   };
+
+  const handleCaptchaVerify = (token: string | null) => {
+    setCaptchaToken(token);
+    if (token && pendingData) {
+      const nextData = pendingData;
+      setPendingData(null);
+      void onSubmit(nextData, token);
+    }
+  };
+  const retryLabel = `${Math.floor(retrySeconds / 60)}:${String(retrySeconds % 60).padStart(2, "0")}`;
+  const handleFormSubmit = (data: LoginFormInput) => { void onSubmit(data); };
 
   const handleResend = async () => {
     if (!unverifiedEmail) return;
@@ -120,7 +155,7 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
       <Input
         id="login-email"
         type="email"
@@ -154,8 +189,12 @@ export function LoginForm() {
         </Link>
       </div>
 
-      <Button type="submit" variant="primary" size="lg" className="w-full" isLoading={isLoading}>
-        {isLoading ? "Signing in..." : "Sign In"}
+      {captchaRequired && (
+        <TurnstileWidget key={captchaResetKey} onVerify={handleCaptchaVerify} onExpire={() => setCaptchaToken(null)} onError={() => { setCaptchaToken(null); toast.error("Security check failed. Please try again."); }} />
+      )}
+
+      <Button type="submit" variant="primary" size="lg" className="w-full" isLoading={isLoading} disabled={retrySeconds > 0}>
+        {isLoading ? "Signing in..." : retrySeconds > 0 ? `Try again in ${retryLabel}` : "Sign In"}
       </Button>
 
       <AuthDivider />
