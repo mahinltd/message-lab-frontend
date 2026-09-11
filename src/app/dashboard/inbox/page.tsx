@@ -92,11 +92,19 @@ export default function InboxPage() {
           <>
             <div className="divide-y divide-slate-100">
               {items.map((item) => (
-                <button
+                <div
                   key={item._id}
                   onClick={() => openMessage(item)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openMessage(item);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                   className={cn(
-                    "w-full text-left px-6 py-4 hover:bg-slate-50 transition-colors",
+                    "w-full text-left px-6 py-4 hover:bg-slate-50 transition-colors select-text focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500",
                     !item.isRead && "bg-indigo-50/40"
                   )}
                 >
@@ -123,7 +131,7 @@ export default function InboxPage() {
                       {timeAgo(item.receivedAt)}
                     </span>
                   </div>
-                </button>
+                </div>
               ))}
             </div>
             <Pagination page={page} pages={pages} onPageChange={setPage} />
