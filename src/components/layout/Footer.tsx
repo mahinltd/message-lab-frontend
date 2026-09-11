@@ -19,6 +19,7 @@ const footerColumns: { title: string; links: FooterLink[] }[] = [
       { name: "Features", href: "/features", anchor: true },
       { name: "Pricing", href: "/pricing", anchor: true },
       { name: "How It Works", href: "/how-it-works", anchor: true },
+      { name: "Download Android App", href: "/download-apk" },
     ],
   },
   {
