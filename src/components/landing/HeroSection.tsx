@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, Zap } from "lucide-react";
+import { ArrowRight, Download, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardMockup } from "./DashboardMockup";
 import type { PageContent } from "@/types";
@@ -73,6 +73,11 @@ export function HeroSection({ content }: { content: PageContent }) {
             </Link>
             <Link href={ctaSecondaryLink}>
               <Button variant="outline" size="lg">{ctaSecondary}</Button>
+            </Link>
+            <Link href="/download-apk">
+              <Button variant="ghost" size="lg" className="gap-2">
+                <Download className="h-4 w-4" /> Download Android App
+              </Button>
             </Link>
           </motion.div>
 

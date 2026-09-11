@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { UserPlus, Download, Link2, Send } from "lucide-react";
 import type { PageContent } from "@/types";
 
@@ -54,7 +55,17 @@ export function HowItWorksSection({ content }: { content: PageContent }) {
                 </span>
               </div>
               <h3 className="mt-5 text-lg font-bold text-slate-900">{step.title}</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">{step.desc}</p>
+              <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                {step.desc}
+                {i === 1 && (
+                  <Link
+                    href="/download-apk"
+                    className="mt-2 inline-flex font-semibold text-indigo-600 hover:text-indigo-700 hover:underline"
+                  >
+                    Download Android App
+                  </Link>
+                )}
+              </p>
             </motion.div>
           ))}
         </div>

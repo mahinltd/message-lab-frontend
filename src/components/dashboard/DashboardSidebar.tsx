@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, MessageSquare, Smartphone, CreditCard, Settings, Inbox, X, ArrowLeft,
+  LayoutDashboard, MessageSquare, Smartphone, CreditCard, Settings, Inbox, Download, X, ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SmsService } from "@/lib/sms";
@@ -16,6 +16,7 @@ const navItems = [
   { href: "/dashboard/devices", label: "Devices", icon: Smartphone },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/download-apk", label: "Download Android App", icon: Download },
 ];
 
 interface DashboardSidebarProps {
