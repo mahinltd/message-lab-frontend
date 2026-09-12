@@ -20,7 +20,7 @@ export default async function HomePage() {
   const offers = plans.map((plan) => ({ "@type": "Offer", name: plan.displayName, price: String(plan.priceMonthly), priceCurrency: plan.currency || "BDT" }));
   const howToSteps = ["Create an account", "Install the Android app", "Pair the phone via QR code or 6-digit code", "Send and receive SMS through the web dashboard"];
   const structuredData = [
-    { "@context": "https://schema.org", "@type": "Organization", name: "MessagesLab", url: siteConfig.url, logo: `${siteConfig.url}/opengraph-image`, sameAs: [content.footer.footer_social_facebook?.body].filter(Boolean), contactPoint: { "@type": "ContactPoint", email: content.footer.footer_support_email?.body || "support@messagelab.tech", contactType: "customer support" } },
+    { "@context": "https://schema.org", "@type": "Organization", name: "MessagesLab", url: siteConfig.url, logo: `${siteConfig.url}/branding/MessageLab-logo.png`, sameAs: [content.footer.footer_social_facebook?.body].filter(Boolean), contactPoint: { "@type": "ContactPoint", email: content.footer.footer_support_email?.body || "support@messagelab.tech", contactType: "customer support" } },
     { "@context": "https://schema.org", "@type": "WebSite", name: "MessagesLab", url: siteConfig.url, description: heroDescription, publisher: { "@type": "Organization", name: "MessagesLab", url: siteConfig.url } },
     { "@context": "https://schema.org", "@type": "SoftwareApplication", name: "MessagesLab", applicationCategory: "BusinessApplication", operatingSystem: "Android", description: heroDescription, offers },
     { "@context": "https://schema.org", "@type": "HowTo", name: "How MessagesLab works", step: howToSteps.map((name) => ({ "@type": "HowToStep", name })) },

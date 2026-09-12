@@ -1,25 +1,148 @@
 @import "tailwindcss";
 
+/* MessagesLab logo palette: electric blue, periwinkle, blue-violet, silver-white, and gold. */
+@theme {
+  --color-indigo-50: #eef0ff;
+  --color-indigo-100: #dfe3ff;
+  --color-indigo-200: #c3caff;
+  --color-indigo-300: #9da9ff;
+  --color-indigo-400: #7383ff;
+  --color-indigo-500: #5363f4;
+  --color-indigo-600: #4148e8;
+  --color-indigo-700: #3438c7;
+  --color-indigo-800: #2d319d;
+  --color-indigo-900: #292d7d;
+  --color-purple-50: #f1efff;
+  --color-purple-100: #e4e0ff;
+  --color-purple-200: #d0c8ff;
+  --color-purple-300: #b2a5ff;
+  --color-purple-400: #927eff;
+  --color-purple-500: #735cf2;
+  --color-purple-600: #6045d8;
+  --color-purple-700: #4f38b5;
+  --color-purple-800: #423092;
+  --color-purple-900: #382a76;
+  --color-amber-50: #fff7df;
+  --color-amber-100: #ffedb3;
+  --color-amber-200: #ffdc70;
+  --color-amber-300: #ffc83d;
+  --color-amber-400: #ffb21b;
+  --color-amber-500: #f99a0b;
+  --color-amber-600: #df7805;
+  --color-amber-700: #b95708;
+  --color-amber-800: #95450e;
+  --color-amber-900: #793b10;
+  --color-blue-50: #edf5ff;
+  --color-blue-100: #dbeaff;
+  --color-blue-200: #bedaff;
+  --color-blue-300: #91c2ff;
+  --color-blue-400: #5da0ff;
+  --color-blue-500: #3c82f6;
+  --color-blue-600: #2864db;
+  --color-blue-700: #2250b5;
+  --color-blue-800: #234594;
+  --color-blue-900: #223d79;
+  --color-slate-50: #f4f6ff;
+  --color-slate-100: #e9ecfb;
+  --color-slate-200: #d9def2;
+  --color-slate-300: #c0c7e0;
+  --color-slate-400: #8c96b8;
+  --color-slate-500: #657096;
+  --color-slate-600: #4b567d;
+  --color-slate-700: #354064;
+  --color-slate-800: #252f52;
+  --color-slate-900: #171d3d;
+  --color-gray-50: #f5f6ff;
+  --color-gray-100: #eaecfa;
+  --color-gray-200: #dadeef;
+  --color-gray-300: #c0c6dc;
+  --color-gray-400: #8993b3;
+  --color-gray-500: #626d91;
+  --color-gray-600: #4a5578;
+  --color-gray-700: #353f61;
+  --color-gray-800: #252e4e;
+  --color-gray-900: #171d3a;
+}
+
 /* Class-based dark mode (won't auto-apply from OS preference) */
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --background: #fbfcff;
+  --foreground: #171d3d;
+  --brand-blue: #4148e8;
+  --brand-periwinkle: #7383ff;
+  --brand-violet: #6045d8;
+  --brand-gold: #f99a0b;
+  --brand-silver: #eef0f7;
+  --surface: rgb(255 255 255 / 0.82);
+  --line: rgb(65 72 232 / 0.12);
+  --focus-ring: rgb(65 72 232 / 0.22);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  background-image:
+    linear-gradient(135deg, rgb(255 255 255 / 0.82), transparent 42%),
+    radial-gradient(circle at 8% 0%, rgb(115 131 255 / 0.1), transparent 28rem),
+    radial-gradient(circle at 92% 12%, rgb(249 154 11 / 0.06), transparent 22rem);
+  background-attachment: fixed;
+  text-rendering: optimizeLegibility;
+}
+
+button, a, input, textarea, select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.surface-glass {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 18px 50px rgb(36 42 105 / 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.reveal-up {
+  animation: reveal-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+::selection {
+  background: rgb(115 131 255 / 0.28);
+  color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+::-webkit-scrollbar-thumb { background: #c0c7e0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand-blue); }
 
 .gradient-text {
-  background: linear-gradient(135deg, #4f46e5, #7c3aed, #a855f7);
+  background: linear-gradient(110deg, var(--brand-blue), var(--brand-violet) 55%, var(--brand-periwinkle));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -59,9 +182,20 @@ body {
   color: var(--foreground);
 }
 .prose a {
-  color: #4f46e5;
+  color: var(--brand-blue);
   text-decoration: none;
 }
 .prose a:hover {
   text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .surface-glass {
+    transition: box-shadow 250ms ease, border-color 250ms ease, transform 250ms ease;
+  }
+  .surface-glass:hover {
+    border-color: rgb(65 72 232 / 0.2);
+    box-shadow: 0 24px 60px rgb(36 42 105 / 0.12);
+    transform: translateY(-2px);
+  }
 }

@@ -17,12 +17,15 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     alternates: { canonical: siteConfig.url },
     icons: {
-      icon: [{ url: "/icon.svg?v=2", type: "image/svg+xml" }],
-      shortcut: "/icon.svg?v=2",
-      apple: "/icon.svg?v=2",
+      icon: [
+        { url: "/branding/MessageLab-favicon-32.png", type: "image/png", sizes: "32x32" },
+        { url: "/branding/MessageLab-favicon.png", type: "image/png", sizes: "64x64" },
+      ],
+      shortcut: [{ url: "/branding/MessageLab-favicon-32.png", type: "image/png", sizes: "32x32" }],
+      apple: [{ url: "/branding/MessageLab-apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
     },
-    openGraph: { type: "website", locale: "en_US", siteName: "MessagesLab", title, description, url: siteConfig.url, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "MessagesLab" }] },
-    twitter: { card: "summary_large_image", title, description, images: ["/opengraph-image"] },
+    openGraph: { type: "website", locale: "en_US", siteName: "MessagesLab", title, description, url: siteConfig.url, images: [{ url: "/branding/MessageLab-logo.png", width: 768, height: 768, alt: "MessagesLab official logo" }] },
+    twitter: { card: "summary_large_image", title, description, images: ["/branding/MessageLab-logo.png"] },
   };
 }
 

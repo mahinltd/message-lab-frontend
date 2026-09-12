@@ -2,8 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { MessageSquare, Mail, Home } from "lucide-react";
+import { Mail, Home } from "lucide-react";
 import type { PageContent } from "@/types";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 interface FooterLink {
   name: string;
@@ -91,9 +92,7 @@ export function Footer({ content }: { content: PageContent }) {
             <div className="col-span-2">
               {/* Logo — separated from nav */}
               <Link href="/" className="flex items-center gap-2.5 mb-4 group">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow">
-                  <MessageSquare className="w-5 h-5 text-white" />
-                </div>
+                <BrandLogo className="h-10 w-10 rounded-xl shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow" />
                 <span className="text-xl font-extrabold tracking-tight text-slate-900">
                   Messages<span className="text-indigo-600">Lab</span>
                 </span>
@@ -121,7 +120,7 @@ export function Footer({ content }: { content: PageContent }) {
                   href={facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-[#1877F2] hover:text-white transition-all duration-200"
+                  className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-600 hover:text-white transition-all duration-200"
                   aria-label="Facebook"
                   title="Follow us on Facebook"
                 >

@@ -17,14 +17,14 @@ export function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
+    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transform-none";
 
   const variants = {
-    primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm hover:shadow-md",
-    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-400 dark:bg-gray-800 dark:text-gray-100",
-    outline: "border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-600 focus:ring-indigo-500",
-    ghost: "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white",
-    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+    primary: "bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:via-indigo-700 hover:to-purple-700 focus:ring-indigo-500 shadow-md shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/25",
+    secondary: "bg-white/80 text-gray-900 ring-1 ring-inset ring-indigo-100 hover:bg-indigo-50 hover:text-indigo-700 focus:ring-indigo-400 dark:bg-gray-800 dark:text-gray-100",
+    outline: "border border-indigo-200 bg-white/50 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-800 focus:ring-indigo-500",
+    ghost: "text-gray-600 dark:text-gray-400 hover:bg-indigo-50 hover:text-indigo-700 dark:hover:bg-gray-800 dark:hover:text-indigo-300",
+    danger: "bg-gradient-to-r from-red-600 to-red-500 text-white hover:from-red-700 hover:to-red-600 focus:ring-red-500 shadow-sm hover:shadow-md",
   };
 
   const sizes = {

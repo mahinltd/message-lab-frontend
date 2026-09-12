@@ -23,7 +23,7 @@ export function Modal({ open, onClose, title, children, maxWidth = "max-w-lg" }:
               initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
-              className={`pointer-events-auto w-full ${maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl`}
+              className={`pointer-events-auto w-full ${maxWidth} max-h-[90vh] overflow-y-auto rounded-2xl border border-indigo-100/80 bg-white shadow-2xl shadow-indigo-950/20`}
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 sticky top-0 bg-white rounded-t-2xl z-10">
                 <h2 className="text-base font-bold text-slate-900">{title}</h2>

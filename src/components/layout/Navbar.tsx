@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, MessageSquare } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import type { PageContent } from "@/types";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -40,9 +41,7 @@ export function Navbar({ content }: { content: PageContent }) {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 lg:h-[68px] flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
-            <MessageSquare className="w-[18px] h-[18px] text-white" />
-          </div>
+          <BrandLogo className="h-9 w-9 rounded-xl shadow-md shadow-indigo-500/20" />
           <span className="text-lg font-extrabold tracking-tight text-slate-900">
             {brandName}
           </span>

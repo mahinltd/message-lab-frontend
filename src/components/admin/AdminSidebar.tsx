@@ -5,9 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, CreditCard, FileText, Package,
-  Settings, ShieldAlert, Timer, X, ArrowLeft, MessageSquare,
+  Settings, ShieldAlert, Timer, X, ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 const navItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -50,9 +51,7 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-5 border-b border-slate-800">
           <Link href="/admin" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <MessageSquare className="w-[18px] h-[18px] text-white" />
-            </div>
+            <BrandLogo className="h-9 w-9 rounded-xl" />
             <div>
               <span className="text-base font-extrabold tracking-tight text-white block leading-none">
                 Messages<span className="text-indigo-400">Lab</span>

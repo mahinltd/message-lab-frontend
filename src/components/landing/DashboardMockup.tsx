@@ -5,6 +5,7 @@ import {
   LayoutDashboard, MessageSquare, Smartphone, CreditCard, Settings,
   Send, TrendingUp, CheckCircle2,
 } from "lucide-react";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", active: true },
@@ -54,9 +55,7 @@ export function DashboardMockup() {
           {/* Sidebar */}
           <div className="hidden sm:flex w-52 flex-col border-r border-slate-200 bg-slate-50/50 p-4 gap-1">
             <div className="flex items-center gap-2 px-2 pb-4 mb-2 border-b border-slate-200">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <MessageSquare className="w-3.5 h-3.5 text-white" />
-              </div>
+              <BrandLogo className="h-7 w-7 rounded-lg" />
               <span className="text-sm font-bold text-slate-900">MessagesLab</span>
             </div>
             {sidebarItems.map((item) => (

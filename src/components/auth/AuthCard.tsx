@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MessageSquare } from "lucide-react";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 interface AuthCardProps {
   children: React.ReactNode;
@@ -22,9 +22,7 @@ export function AuthCard({ children, title, subtitle }: AuthCardProps) {
       {/* Logo — always visible on any background */}
       <div className="text-center mb-8">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow duration-300">
-            <MessageSquare className="w-5.5 h-5.5 text-white" />
-          </div>
+          <BrandLogo className="h-11 w-11 rounded-xl shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow duration-300" />
           <span className="text-[22px] font-bold tracking-tight text-gray-900 dark:text-white">
             Messages<span className="text-indigo-600 dark:text-indigo-400">Lab</span>
           </span>

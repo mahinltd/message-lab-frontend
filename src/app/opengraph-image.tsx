@@ -12,8 +12,8 @@ export default async function OpenGraphImage() {
   const title = content.hero.hero_title?.title || "Turn Your Android Into a Personal SMS Gateway";
 
   return new ImageResponse(
-    <div style={{ background: "linear-gradient(135deg, #eef2ff, #ffffff 55%, #e0e7ff)", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "80px", color: "#0f172a" }}>
-      <div style={{ color: "#4f46e5", fontSize: 28, fontWeight: 700, marginBottom: 28 }}>{badge}</div>
+    <div style={{ background: "linear-gradient(135deg, #eef0ff, #ffffff 55%, #dfe3ff)", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "80px", color: "#171d3d" }}>
+      <div style={{ color: "#4148e8", fontSize: 28, fontWeight: 700, marginBottom: 28 }}>{badge}</div>
       <div style={{ fontSize: 64, fontWeight: 800, lineHeight: 1.1, maxWidth: 950 }}>MessagesLab</div>
       <div style={{ fontSize: 38, fontWeight: 700, lineHeight: 1.2, maxWidth: 950, marginTop: 20 }}>{title}</div>
     </div>,

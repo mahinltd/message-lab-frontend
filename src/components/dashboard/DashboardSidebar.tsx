@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SmsService } from "@/lib/sms";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -73,9 +74,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-5 border-b border-slate-200">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <MessageSquare className="w-[18px] h-[18px] text-white" />
-            </div>
+            <BrandLogo className="h-9 w-9 rounded-xl" />
             <span className="text-lg font-extrabold tracking-tight text-slate-900">
               Messages<span className="text-indigo-600">Lab</span>
             </span>
