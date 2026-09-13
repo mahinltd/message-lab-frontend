@@ -8,6 +8,8 @@ import { Pagination } from "@/components/ui/pagination";
 import { AdminService } from "@/lib/admin";
 import { timeAgo, getInitials } from "@/lib/utils";
 import { AdminUser } from "@/types";
+import { getApiErrorMessage } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -36,8 +38,8 @@ export default function AdminUsersPage() {
       setUsers(data.users || []);
       setPages(data.pagination?.pages || 1);
       setTotal(data.pagination?.total || 0);
-    } catch {
-      // ignore
+    } catch (error: unknown) {
+      toast.error(getApiErrorMessage(error, "Unable to load users. Please verify your admin session and try again."));
     } finally {
       setLoading(false);
     }
