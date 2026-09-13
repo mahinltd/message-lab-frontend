@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Download Android App",
-  description: "Download the official MessagesLab Android app and connect your phone to your personal SMS gateway.",
+  description: "Download the official MessageLab Android app and connect your phone to your personal SMS gateway.",
   alternates: { canonical: `${siteConfig.url}/download-apk` },
   robots: { index: true, follow: true },
 };
@@ -21,13 +21,13 @@ export default function DownloadApkPage() {
           </div>
           <div className="mx-auto mt-6 max-w-xl text-center">
             <p className="text-sm font-semibold text-indigo-600">Official Android application</p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Download MessagesLab</h1>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Download MessageLab</h1>
             <p className="mt-4 text-base leading-relaxed text-slate-600">
-              Install MessagesLab on the Android phone you want to pair with your dashboard and use its own SIM to send and receive SMS.
+              Install MessageLab on the Android phone you want to pair with your dashboard and use its own SIM to send and receive SMS.
             </p>
             <a href="/downloads/MessageLab.apk" download="MessageLab.apk" className="mt-8 block">
               <Button size="lg" className="w-full gap-2 sm:w-auto sm:min-w-72">
-                <Download className="h-5 w-5" /> Download MessageLab.apk
+                <Download className="h-5 w-5" /> Download the Android app
               </Button>
             </a>
           </div>

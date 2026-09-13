@@ -13,7 +13,7 @@ interface ComposeSmsFormProps {
   maxRecipients: number;
 }
 
-type Mode = "single" | "bulk";
+type Mode = "single" | "bulk" | "scheduled";
 
 export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
   const router = useRouter();
@@ -22,6 +22,7 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
   const [recipients, setRecipients] = useState("");
   const [message, setMessage] = useState("");
   const [campaignName, setCampaignName] = useState("");
+  const [runAt, setRunAt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const bulkParsed = useMemo(() => parseRecipients(recipients), [recipients]);
@@ -37,7 +38,7 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
     parsed.valid.length > 0 &&
     !overLimit &&
     message.trim().length > 0 &&
-    !isLoading;
+    !isLoading && (mode !== "scheduled" || Boolean(runAt));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,16 +46,17 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
 
     setIsLoading(true);
     try {
-      const result = await SmsService.sendBulk({
-        campaignName:
-          campaignName.trim() || (mode === "single" ? "Single Message" : undefined),
-        recipients: parsed.valid.join(","),
-        messageBody: message,
-      });
-      toast.success(
-        mode === "single" ? "Message queued for sending!" : "Campaign created and queued!"
-      );
-      router.push(`/dashboard/sms/${result.campaignId}`);
+      const result = mode === "scheduled"
+        ? await SmsService.schedule({ campaignName: campaignName.trim() || "Scheduled Campaign", recipients: parsed.valid.join(","), messageBody: message, runAt: new Date(runAt).toISOString() })
+        : mode === "single"
+        ? await SmsService.sendSingle({ recipient: parsed.valid[0], messageBody: message })
+        : await SmsService.sendBulk({
+            campaignName: campaignName.trim() || undefined,
+            recipients: parsed.valid.join(","),
+            messageBody: message,
+          });
+      toast.success(mode === "scheduled" ? "Campaign scheduled" : mode === "single" ? "Message queued for sending!" : "Campaign created and queued!");
+      if (mode !== "scheduled") router.push(`/dashboard/sms/${result.campaignId}`);
     } catch (error: unknown) {
       toast.error(getApiErrorMessage(error, "Failed to send."));
     } finally {
@@ -76,6 +78,10 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
         >
           <User className="w-4 h-4" /> Single
         </button>
+        <button type="button" onClick={() => setMode("scheduled")} className={cn(
+          "flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+          mode === "scheduled" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-600 hover:text-slate-900"
+        )}>Schedule</button>
         <button
           type="button"
           onClick={() => setMode("bulk")}
@@ -89,7 +95,7 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
       </div>
 
       {/* Campaign name (bulk only) */}
-      {mode === "bulk" && (
+      {mode !== "single" && (
         <Input
           id="campaign-name"
           label="Campaign Name (Optional)"
@@ -97,6 +103,10 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
           value={campaignName}
           onChange={(e) => setCampaignName(e.target.value)}
         />
+      )}
+
+      {mode === "scheduled" && (
+        <Input id="run-at" type="datetime-local" label="Send At" value={runAt} onChange={(e) => setRunAt(e.target.value)} />
       )}
 
       {/* Recipients */}
@@ -194,7 +204,7 @@ export function ComposeSmsForm({ maxRecipients }: ComposeSmsFormProps) {
 
       <Button type="submit" variant="primary" size="lg" className="w-full gap-2" disabled={!canSubmit} isLoading={isLoading}>
         <Send className="w-4 h-4" />
-        {isLoading ? "Sending..." : mode === "single" ? "Send Message" : "Send Campaign"}
+        {isLoading ? "Sending..." : mode === "single" ? "Send Message" : mode === "scheduled" ? "Schedule Campaign" : "Send Campaign"}
       </Button>
     </form>
   );

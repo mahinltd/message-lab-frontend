@@ -1,6 +1,16 @@
 import { api } from "@/lib/api";
 
 export class SmsService {
+  static async schedule(data: { recipients: string; messageBody: string; campaignName?: string; runAt: string }) {
+    const res = await api.post("/sms/scheduled", data);
+    return res.data.data;
+  }
+
+  static async sendSingle(data: { recipient: string; messageBody: string }) {
+    const res = await api.post("/sms/single", data);
+    return res.data.data;
+  }
+
   static async sendBulk(data: {
     campaignName?: string;
     recipients: string;

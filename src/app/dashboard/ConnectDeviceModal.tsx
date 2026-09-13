@@ -136,7 +136,7 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
                   <div className="space-y-5">
                     <p className="text-sm text-slate-600 leading-relaxed">
                       Give your Android device a name. You&apos;ll get a QR code and a 6-digit
-                      code to enter in the Messages Lab app.
+                      code to enter in the MessageLab app.
                     </p>
                     <Input
                       id="device-name"

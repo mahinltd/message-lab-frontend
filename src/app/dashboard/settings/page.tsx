@@ -46,10 +46,10 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {user?.profilePicture && !user?.isMobileVerified ? (
+        {user?.authProviders?.google && !user?.authProviders?.local ? (
           <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 text-sm text-blue-800">
-            This account was created with Google. To set a password for email login,
-            use the &quot;Forgot Password&quot; option after logging out.
+            This account uses Google sign-in and does not currently have a local password.
+            Password changes are unavailable for this account.
           </div>
         ) : (
           <ChangePasswordForm />

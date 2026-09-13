@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, LogOut, ChevronDown } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
@@ -13,6 +14,7 @@ const titles: Record<string, string> = {
   "/dashboard/sms": "Messages",
   "/dashboard/devices": "Devices",
   "/dashboard/billing": "Billing",
+  "/dashboard/developer": "Developer API",
   "/dashboard/settings": "Settings",
   "/dashboard/inbox": "Inbox",
 };
@@ -71,9 +73,13 @@ export function DashboardTopbar({ onMenuClick }: DashboardTopbarProps) {
           onClick={() => setMenuOpen(!menuOpen)}
           className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-            {user ? getInitials(user.name) : "?"}
-          </div>
+          {user?.profilePicture ? (
+            <Image src={user.profilePicture} alt="" width={32} height={32} unoptimized className="h-8 w-8 rounded-full object-cover" />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+              {user ? getInitials(user.name) : "?"}
+            </div>
+          )}
           <span className="hidden sm:block text-sm font-medium text-slate-700">
             {user?.name}
           </span>

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { siteConfig } from "@/config/site";
 import { fetchContent } from "@/lib/server/content";
+import { BRAND_NAME } from "@/lib/brand";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = content.hero.hero_subtitle?.body || "Turn your Android phone into a personal SMS gateway.";
   return {
     metadataBase: new URL(siteConfig.url),
-    title: { default: `${title} | MessagesLab`, template: "%s | MessagesLab" },
+    title: { default: `${title} | ${BRAND_NAME}`, template: `%s | ${BRAND_NAME}` },
     description,
     alternates: { canonical: siteConfig.url },
     icons: {
@@ -24,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
       shortcut: [{ url: "/branding/MessageLab-favicon-32.png", type: "image/png", sizes: "32x32" }],
       apple: [{ url: "/branding/MessageLab-apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
     },
-    openGraph: { type: "website", locale: "en_US", siteName: "MessagesLab", title, description, url: siteConfig.url, images: [{ url: "/branding/MessageLab-logo.png", width: 768, height: 768, alt: "MessagesLab official logo" }] },
+    openGraph: { type: "website", locale: "en_US", siteName: BRAND_NAME, title, description, url: siteConfig.url, images: [{ url: "/branding/MessageLab-logo.png", width: 768, height: 768, alt: `${BRAND_NAME} official logo` }] },
     twitter: { card: "summary_large_image", title, description, images: ["/branding/MessageLab-logo.png"] },
   };
 }

@@ -7,7 +7,6 @@ export class AdminService {
     await fetch("/api/revalidate", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify({ secret: process.env.NEXT_PUBLIC_REVALIDATE_SECRET || "" }),
     });
   }
   /* ---------- Users ---------- */

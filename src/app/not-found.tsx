@@ -12,7 +12,7 @@ export default function NotFound() {
       <div>
         <p className="text-sm font-semibold text-indigo-600">404</p>
         <h1 className="mt-2 text-3xl font-bold text-slate-900">That page does not exist</h1>
-        <p className="mt-3 text-slate-600">Return home or visit the Help Center to find your way around MessagesLab.</p>
+        <p className="mt-3 text-slate-600">Return home or visit the Help Center to find your way around MessageLab.</p>
         <div className="mt-6 flex justify-center gap-4">
           <Link href="/" className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white">Home</Link>
           <Link href="/help" className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700">Help Center</Link>

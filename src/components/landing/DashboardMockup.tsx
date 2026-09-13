@@ -56,7 +56,7 @@ export function DashboardMockup() {
           <div className="hidden sm:flex w-52 flex-col border-r border-slate-200 bg-slate-50/50 p-4 gap-1">
             <div className="flex items-center gap-2 px-2 pb-4 mb-2 border-b border-slate-200">
               <BrandLogo className="h-7 w-7 rounded-lg" />
-              <span className="text-sm font-bold text-slate-900">MessagesLab</span>
+              <span className="text-sm font-bold text-slate-900">MessageLab</span>
             </div>
             {sidebarItems.map((item) => (
               <div

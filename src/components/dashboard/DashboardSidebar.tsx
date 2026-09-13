@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, MessageSquare, Smartphone, CreditCard, Settings, Inbox, Download, X, ArrowLeft,
+  LayoutDashboard, MessageSquare, Smartphone, CreditCard, Settings, Inbox, Download, KeyRound, X, ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SmsService } from "@/lib/sms";
@@ -16,6 +16,7 @@ const navItems = [
   { href: "/dashboard/inbox", label: "Inbox", icon: Inbox, badge: true },
   { href: "/dashboard/devices", label: "Devices", icon: Smartphone },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+  { href: "/dashboard/developer", label: "Developer API", icon: KeyRound },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
   { href: "/download-apk", label: "Download Android App", icon: Download },
 ];
@@ -76,7 +77,7 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <BrandLogo className="h-9 w-9 rounded-xl" />
             <span className="text-lg font-extrabold tracking-tight text-slate-900">
-              Messages<span className="text-indigo-600">Lab</span>
+              Messag<span className="text-indigo-600">Lab</span>
             </span>
           </Link>
           <button onClick={onClose} className="lg:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100">

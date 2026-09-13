@@ -8,7 +8,7 @@ import { DeviceService } from "@/lib/device";
 import { Device } from "@/types";
 import { getApiErrorMessage, getApiErrorStatus } from "@/lib/utils";
 
-const RECONNECT_HELPER = "Open the Messages Lab app on this phone and scan this QR — or enter the code — to reconnect this device. No new device will be created.";
+const RECONNECT_HELPER = "Open the MessageLab app on this phone and scan this QR — or enter the code — to reconnect this device. No new device will be created.";
 
 interface ReconnectDeviceModalProps {
   open: boolean;

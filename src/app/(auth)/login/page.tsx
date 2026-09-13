@@ -5,7 +5,7 @@ export const metadata = { title: "Sign In" };
 
 export default function LoginPage() {
   return (
-    <AuthCard title="Welcome back" subtitle="Sign in to your Messages Lab account">
+    <AuthCard title="Welcome back" subtitle="Sign in to your MessageLab account">
       <LoginForm />
     </AuthCard>
   );

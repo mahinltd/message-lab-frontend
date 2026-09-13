@@ -1,4 +1,5 @@
 import type { PageContent, PlanConfig } from "@/types";
+import { normalizeBrandContent } from "@/lib/brand";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
@@ -10,9 +11,9 @@ const fallbackContent: ServerContent = {
   hero: {
     hero_badge: { title: "Your Phone. Your SIM. Your Gateway.", body: null },
     hero_title: { title: "Turn Your Android Into a Personal SMS Gateway", body: null },
-    hero_subtitle: { title: null, body: "Send, receive, and manage SMS through your own device using the Messages Lab platform." },
+    hero_subtitle: { title: null, body: "Send, receive, and manage SMS through your own device using the MessageLab platform." },
     hero_cta_primary: { title: "Get Started Free", body: "/register" },
-    hero_cta_secondary: { title: "View Pricing", body: "/pricing" },
+    hero_cta_secondary: { title: "View Pricing", body: "/#pricing" },
   },
   header: {},
   footer: {
@@ -42,13 +43,13 @@ async function fetchPublic<T>(path: string, fallback: T): Promise<T> {
 
 export async function fetchContent(): Promise<ServerContent> {
   const content = await fetchPublic<ServerContent>("/public/content", fallbackContent);
-  return {
+  return normalizeBrandContent({
     ...fallbackContent,
     ...content,
     hero: { ...fallbackContent.hero, ...(content?.hero || {}) },
     footer: { ...fallbackContent.footer, ...(content?.footer || {}) },
     pricing: { ...fallbackContent.pricing, ...(content?.pricing || {}) },
-  };
+  });
 }
 
 export async function fetchPlans(): Promise<PlanConfig[]> {

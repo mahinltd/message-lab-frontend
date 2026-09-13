@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { fetchContent } from "@/lib/server/content";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import sanitizeHtml from "sanitize-html";
 
 interface InfoPageLayoutProps {
   title: string;
@@ -37,6 +38,11 @@ export async function InfoPageLayout({
       { "@type": "ListItem", position: 2, name: pageTitle },
     ],
   };
+  const safePageContent = sanitizeHtml(pageContent, {
+    allowedTags: ["a", "blockquote", "br", "code", "em", "h2", "h3", "h4", "li", "ol", "p", "pre", "strong", "ul"],
+    allowedAttributes: { a: ["href", "rel", "target"] },
+    allowedSchemes: ["http", "https", "mailto"],
+  });
 
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -70,7 +76,7 @@ export async function InfoPageLayout({
           prose-li:text-slate-600
           prose-a:text-indigo-600 prose-a:no-underline hover:prose-a:underline
           prose-strong:text-slate-900"
-        dangerouslySetInnerHTML={{ __html: pageContent }}
+        dangerouslySetInnerHTML={{ __html: safePageContent }}
       />
 
       {/* Footer CTA */}

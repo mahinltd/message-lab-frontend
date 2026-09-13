@@ -7,7 +7,7 @@ import type { PageContent } from "@/types";
 
 const steps = [
   { icon: UserPlus, title: "Create an Account", desc: "Sign up for free and verify your email address." },
-  { icon: Download, title: "Install the App", desc: "Download the Messages Lab Android app and grant permissions." },
+  { icon: Download, title: "Install the App", desc: "Download the MessageLab Android app and grant permissions." },
   { icon: Link2, title: "Connect Device", desc: "Scan the QR code or enter the pairing code to connect." },
   { icon: Send, title: "Start Sending", desc: "Use the web dashboard to send SMS through your device." },
 ];

@@ -23,6 +23,9 @@ interface PlanEdit {
   maxDailyMessages: number | string;
   maxDevices: number | string;
   minSmsDelayMs: number | string;
+  apiAccess: boolean;
+  otpEnabled: boolean;
+  maxDailyOtpRequests: number | string;
   featuresText: string;
   isActive: boolean;
   sortOrder: number | string;
@@ -62,6 +65,9 @@ export default function AdminPlansPage() {
       ...p,
       name: p.planId,
       featuresText: (p.features || []).join("\n"),
+      apiAccess: p.apiAccess ?? false,
+      otpEnabled: p.otpEnabled ?? false,
+      maxDailyOtpRequests: p.maxDailyOtpRequests ?? 0,
     });
   };
 
@@ -81,6 +87,9 @@ export default function AdminPlansPage() {
         maxDailyMessages: Number(editing.maxDailyMessages) || 0,
         maxDevices: Number(editing.maxDevices) || 1,
         minSmsDelayMs: Number(editing.minSmsDelayMs) || 3000,
+        apiAccess: editing.apiAccess,
+        otpEnabled: editing.otpEnabled,
+        maxDailyOtpRequests: Number(editing.maxDailyOtpRequests) || 0,
         features: (editing.featuresText || "").split("\n").map((f: string) => f.trim()).filter(Boolean),
         isActive: editing.isActive ?? true,
         sortOrder: Number(editing.sortOrder) || 0,
@@ -154,6 +163,15 @@ export default function AdminPlansPage() {
               <Input id="p-name" label="Internal Name" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
               <Input id="p-display" label="Display Name" value={editing.displayName} onChange={(e) => setEditing({ ...editing, displayName: e.target.value })} />
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" checked={editing.apiAccess} onChange={(e) => setEditing({ ...editing, apiAccess: e.target.checked })} /> API access
+              </label>
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" checked={editing.otpEnabled} onChange={(e) => setEditing({ ...editing, otpEnabled: e.target.checked })} /> OTP enabled
+              </label>
+            </div>
+            <Input id="p-otp-daily" type="number" label="Max Daily OTP Requests" value={String(editing.maxDailyOtpRequests)} onChange={(e) => setEditing({ ...editing, maxDailyOtpRequests: e.target.value })} />
             <Input id="p-desc" label="Description" value={editing.description || ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
             <div className="grid grid-cols-2 gap-3">
               <Input id="p-monthly" type="number" label="Price Monthly" value={String(editing.priceMonthly)} onChange={(e) => setEditing({ ...editing, priceMonthly: e.target.value })} />

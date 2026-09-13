@@ -10,14 +10,14 @@ import type { PageContent } from "@/types";
 import { BrandLogo } from "@/components/layout/BrandLogo";
 
 const navLinks = [
-  { name: "Features", href: "#features" },
-  { name: "How It Works", href: "#how-it-works" },
-  { name: "Pricing", href: "#pricing" },
+  { name: "Features", href: "/#features" },
+  { name: "How It Works", href: "/#how-it-works" },
+  { name: "Pricing", href: "/#pricing" },
   { name: "Download App", href: "/download-apk" },
 ];
 
 export function Navbar({ content }: { content: PageContent }) {
-  const brandName = content.header.site_name?.title || "MessagesLab";
+  const brandName = content.header.site_name?.title || "MessageLab";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { isAuthenticated } = useAuthStore();

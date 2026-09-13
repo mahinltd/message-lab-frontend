@@ -2,7 +2,7 @@ import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 
-export const metadata: Metadata = { title: "System Status", description: "Check current MessagesLab availability for the web dashboard, API, SMS gateway, and payments.", alternates: { canonical: `${siteConfig.url}/status` }, robots: { index: true, follow: true } };
+export const metadata: Metadata = { title: "System Status", description: "Check current MessageLab availability for the web dashboard, API, SMS gateway, and payments.", alternates: { canonical: `${siteConfig.url}/status` }, robots: { index: true, follow: true } };
 
 export default function StatusPage() {
   return (
@@ -11,7 +11,7 @@ export default function StatusPage() {
       contentKey="system_status"
       defaultContent={`
         <h2>All Systems Operational</h2>
-        <p>Messages Lab services are running normally.</p>
+        <p>MessageLab services are running normally.</p>
 
         <h2>Service Status</h2>
         <ul>

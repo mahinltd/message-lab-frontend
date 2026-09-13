@@ -5,6 +5,7 @@ import { fetchContent } from "@/lib/server/content";
 const buildTime = new Date();
 const pages = [
   ["/", "weekly", 1],
+  ["/download-apk", "monthly", 0.8],
   ["/about", "monthly", 0.7],
   ["/blog", "monthly", 0.7],
   ["/contact", "monthly", 0.6],

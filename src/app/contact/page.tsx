@@ -2,7 +2,7 @@ import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 
-export const metadata: Metadata = { title: "Contact Us", description: "Contact the MessagesLab team for questions, feedback, support, or business inquiries.", alternates: { canonical: `${siteConfig.url}/contact` }, robots: { index: true, follow: true } };
+export const metadata: Metadata = { title: "Contact Us", description: "Contact the MessageLab team for questions, feedback, support, or business inquiries.", alternates: { canonical: `${siteConfig.url}/contact` }, robots: { index: true, follow: true } };
 
 export default function ContactPage() {
   return (

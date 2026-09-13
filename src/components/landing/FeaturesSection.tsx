@@ -35,7 +35,7 @@ export function FeaturesSection({ content }: { content: PageContent }) {
             Features
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Why Choose <span className="gradient-text">Messages Lab?</span>
+            Why Choose <span className="gradient-text">MessageLab?</span>
           </h2>
           <p className="mt-4 text-lg text-slate-600">
             Everything you need to manage SMS through your own device.

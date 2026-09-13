@@ -1,5 +1,5 @@
 // ============================================
-// Messages Lab - TypeScript Type Definitions
+// MessageLab - TypeScript Type Definitions
 // ============================================
 
 // --- User Types ---
@@ -12,6 +12,10 @@ export interface User {
   isEmailVerified: boolean;
   isMobileVerified: boolean;
   profilePicture: string | null;
+  authProviders?: {
+    local: boolean;
+    google: boolean;
+  };
   createdAt?: string;
   lastLoginAt?: string | null;
 }
@@ -170,6 +174,9 @@ export interface PlanConfig {
   maxDailyMessages: number;
   maxDevices: number;
   minSmsDelayMs: number;
+  apiAccess?: boolean;
+  otpEnabled?: boolean;
+  maxDailyOtpRequests?: number;
   features: string[];
   isActive: boolean;
   sortOrder: number;
@@ -246,6 +253,9 @@ export interface PlanUpsertInput {
   maxDailyMessages: number;
   maxDevices: number;
   minSmsDelayMs: number;
+  apiAccess?: boolean;
+  otpEnabled?: boolean;
+  maxDailyOtpRequests?: number;
   features: string[];
   isActive: boolean;
   sortOrder: number;

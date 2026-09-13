@@ -12,11 +12,12 @@ export function HeroSection({ content }: { content: PageContent }) {
 
   const badge = content?.hero?.hero_badge?.title || "Your Phone. Your SIM. Your Gateway.";
   const title = content?.hero?.hero_title?.title || "Turn Your Android Into a Personal SMS Gateway";
-  const subtitle = content?.hero?.hero_subtitle?.body || "Send, receive, and manage SMS through your own device using the Messages Lab platform.";
+  const subtitle = content?.hero?.hero_subtitle?.body || "Send, receive, and manage SMS through your own device using the MessageLab platform.";
   const ctaPrimary = content?.hero?.hero_cta_primary?.title || "Get Started Free";
   const ctaPrimaryLink = content?.hero?.hero_cta_primary?.body || "/register";
   const ctaSecondary = content?.hero?.hero_cta_secondary?.title || "View Pricing";
-  const ctaSecondaryLink = content?.hero?.hero_cta_secondary?.body || "/pricing";
+  const configuredSecondaryLink = content?.hero?.hero_cta_secondary?.body;
+  const ctaSecondaryLink = configuredSecondaryLink === "/pricing" ? "/#pricing" : configuredSecondaryLink || "/#pricing";
 
   // Split title to gradient the last part
   const words = title.split(" ");

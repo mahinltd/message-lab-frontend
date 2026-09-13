@@ -17,9 +17,9 @@ const footerColumns: { title: string; links: FooterLink[] }[] = [
   {
     title: "Product",
     links: [
-      { name: "Features", href: "/features", anchor: true },
-      { name: "Pricing", href: "/pricing", anchor: true },
-      { name: "How It Works", href: "/how-it-works", anchor: true },
+      { name: "Features", href: "/#features", anchor: true },
+      { name: "Pricing", href: "/#pricing", anchor: true },
+      { name: "How It Works", href: "/#how-it-works", anchor: true },
       { name: "Download Android App", href: "/download-apk" },
     ],
   },
@@ -60,7 +60,7 @@ export function Footer({ content }: { content: PageContent }) {
 
   const copyright =
     content?.footer?.footer_copyright?.body ||
-    `© ${new Date().getFullYear()} Messages Lab. All rights reserved.`;
+    `© ${new Date().getFullYear()} MessageLab. All rights reserved.`;
 
   const tagline =
     content?.footer?.footer_tagline?.body || "Made with ❤️ in Bangladesh";
@@ -74,7 +74,9 @@ export function Footer({ content }: { content: PageContent }) {
 
   // Handle anchor navigation smoothly
   const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    const target = document.querySelector(href);
+    const hash = href.slice(href.indexOf("#"));
+    if (window.location.pathname !== "/") return;
+    const target = document.querySelector(hash);
     if (target) {
       e.preventDefault();
       const top = target.getBoundingClientRect().top + window.scrollY - 80;
@@ -129,7 +131,7 @@ export function Footer({ content }: { content: PageContent }) {
 
                 {/* Email — Official Icon */}
                 <a
-                  href={`mailto:${supportEmail}?subject=Messages Lab Support`}
+                  href={`mailto:${supportEmail}?subject=MessageLab Support`}
                   className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-600 hover:text-white transition-all duration-200"
                   aria-label="Email Us"
                   title={`Email: ${supportEmail}`}
