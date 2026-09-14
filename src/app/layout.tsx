@@ -7,6 +7,7 @@ import { fetchContent } from "@/lib/server/content";
 import { BRAND_NAME } from "@/lib/brand";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { MetaPixel } from "@/components/analytics/MetaPixel";
+import { TikTokPixel } from "@/components/analytics/TikTokPixel";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +43,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <GoogleAnalytics />
         <MetaPixel />
+        <TikTokPixel />
         {children}
         <Toaster
           position="top-right"
