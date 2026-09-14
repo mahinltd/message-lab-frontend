@@ -6,6 +6,7 @@ import { siteConfig } from "@/config/site";
 import { fetchContent } from "@/lib/server/content";
 import { BRAND_NAME } from "@/lib/brand";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { MetaPixel } from "@/components/analytics/MetaPixel";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,6 +41,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
         <GoogleAnalytics />
+        <MetaPixel />
         {children}
         <Toaster
           position="top-right"

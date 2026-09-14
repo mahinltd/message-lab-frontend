@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Download, Smartphone, ShieldCheck } from "lucide-react";
+import { Smartphone, ShieldCheck } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { Button } from "@/components/ui/button";
+import { MetaDownloadLink } from "@/components/analytics/MetaDownloadLink";
 
 export const metadata: Metadata = {
   title: "Download Android App",
@@ -25,11 +25,7 @@ export default function DownloadApkPage() {
             <p className="mt-4 text-base leading-relaxed text-slate-600">
               Install MessageLab on the Android phone you want to pair with your dashboard and use its own SIM to send and receive SMS.
             </p>
-            <a href="/downloads/MessageLab.apk" download="MessageLab.apk" className="mt-8 block">
-              <Button size="lg" className="w-full gap-2 sm:w-auto sm:min-w-72">
-                <Download className="h-5 w-5" /> Download the Android app
-              </Button>
-            </a>
+            <MetaDownloadLink />
           </div>
 
           <div className="mx-auto mt-10 grid max-w-xl gap-4 border-t border-slate-200 pt-8 sm:grid-cols-2">

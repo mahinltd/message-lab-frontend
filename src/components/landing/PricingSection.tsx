@@ -1,17 +1,31 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PageContent, PlanConfig } from "@/types";
+import { trackMetaEvent, trackMetaCustomEvent } from "@/lib/analytics/meta";
 
 export function PricingSection({ content, plans }: { content: PageContent; plans: PlanConfig[] }) {
   const note = content?.pricing?.sectionContent?.pricing_section_note?.body || "";
+  const pricingRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const section = pricingRef.current;
+    if (!section || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      trackMetaEvent("ViewContent", { content_name: "pricing" });
+      observer.disconnect();
+    }, { threshold: 0.25 });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section id="pricing" className="section-padding bg-slate-50">
+    <section ref={pricingRef} id="pricing" className="section-padding bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -76,7 +90,7 @@ export function PricingSection({ content, plans }: { content: PageContent; plans
               </ul>
 
               <div className="mt-8">
-                <Link href="/register" className="block">
+                  <Link href="/register" className="block" onClick={() => trackMetaCustomEvent("cta_click", { cta_name: "pricing_plan", cta_location: "pricing" })}>
                   <Button
                     variant={plan.planId === "pro" ? "primary" : "outline"}
                     size="lg"

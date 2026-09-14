@@ -7,6 +7,7 @@ import { ArrowRight, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DashboardMockup } from "./DashboardMockup";
 import type { PageContent } from "@/types";
+import { trackMetaCustomEvent } from "@/lib/analytics/meta";
 
 export function HeroSection({ content }: { content: PageContent }) {
 
@@ -66,13 +67,13 @@ export function HeroSection({ content }: { content: PageContent }) {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href={ctaPrimaryLink}>
+            <Link href={ctaPrimaryLink} onClick={() => trackMetaCustomEvent("cta_click", { cta_name: "primary", cta_location: "hero" })}>
               <Button variant="primary" size="lg" className="gap-2 group shadow-lg shadow-indigo-500/25">
                 {ctaPrimary}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link href={ctaSecondaryLink}>
+            <Link href={ctaSecondaryLink} onClick={() => trackMetaCustomEvent("cta_click", { cta_name: "pricing", cta_location: "hero" })}>
               <Button variant="outline" size="lg">{ctaSecondary}</Button>
             </Link>
           </motion.div>

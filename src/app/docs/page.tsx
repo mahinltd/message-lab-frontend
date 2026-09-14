@@ -1,15 +1,18 @@
 import { InfoPageLayout } from "@/components/layout/InfoPageLayout";
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { MetaViewContent } from "@/components/analytics/MetaViewContent";
 
 export const metadata: Metadata = { title: "Documentation", description: "Read MessageLab documentation for Android device pairing, SMS campaigns, plans, and payments.", alternates: { canonical: `${siteConfig.url}/docs` }, robots: { index: true, follow: true } };
 
 export default function DocsPage() {
   return (
-    <InfoPageLayout
-      title="Documentation"
-      contentKey="documentation"
-      defaultContent={`
+    <>
+      <MetaViewContent contentName="developer_documentation" />
+      <InfoPageLayout
+        title="Documentation"
+        contentKey="documentation"
+        defaultContent={`
         <p>MessageLab turns an Android phone and its SIM into an SMS gateway. The web dashboard supports device pairing, single and bulk SMS, one-time scheduled campaigns, inbound SMS, delivery status, plans, and payments.</p>
 
         <h2>Quick Start</h2>
@@ -80,7 +83,8 @@ print(response.json())</code></pre>
           <li><strong>Is there a webhook?</strong> No webhook endpoint is currently enabled. Use the status endpoint.</li>
         </ul>
         <p>For account or device help, visit <a href="/help">Help Center</a> or <a href="/support">Contact Support</a>.</p>
-      `}
-    />
+        `}
+      />
+    </>
   );
 }

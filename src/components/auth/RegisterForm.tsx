@@ -16,6 +16,7 @@ import { AuthDivider } from "./AuthDivider";
 import { PasswordField } from "./PasswordField";
 import { getApiErrorMessage, getApiErrorStatus } from "@/lib/utils";
 import { TurnstileWidget } from "./TurnstileWidget";
+import { trackMetaEvent } from "@/lib/analytics/meta";
 
 const registerSchema = z
   .object({
@@ -50,6 +51,7 @@ export function RegisterForm() {
   const [pendingData, setPendingData] = useState<RegisterFormInput | null>(null);
   const [retrySeconds, setRetrySeconds] = useState(0);
   const [captchaResetKey, setCaptchaResetKey] = useState(0);
+  const [signupStarted, setSignupStarted] = useState(false);
   const router = useRouter();
 
   const {
@@ -75,6 +77,10 @@ export function RegisterForm() {
   }, [retrySeconds]);
 
   const onSubmit = async (data: RegisterFormInput, token = captchaToken) => {
+    if (!signupStarted) {
+      setSignupStarted(true);
+      trackMetaEvent("SignUp");
+    }
     setIsLoading(true);
     setDuplicateEmail(null);
     try {
@@ -87,6 +93,7 @@ export function RegisterForm() {
       } as RegisterFormInput);
       setRegistrationSuccess(true);
       setRegisteredEmail(data.email);
+      trackMetaEvent("CompleteRegistration", { status: "submitted" });
       toast.success("Account created! Check your email to verify.");
     } catch (error: unknown) {
       const status = getApiErrorStatus(error);
