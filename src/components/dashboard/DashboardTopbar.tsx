@@ -45,14 +45,10 @@ export function DashboardTopbar({ onMenuClick }: DashboardTopbarProps) {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      await AuthService.logout();
-    } catch {
-      // ignore
-    }
     logout();
     toast.success("Logged out successfully");
     router.push("/");
+    void AuthService.logout().catch(() => undefined);
   };
 
   return (

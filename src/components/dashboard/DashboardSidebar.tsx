@@ -42,13 +42,8 @@ export function DashboardSidebar({ open, onClose }: DashboardSidebarProps) {
       }
     };
 
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 30000);
-
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
+    void fetchUnread();
+    return () => { active = false; };
   }, []);
 
   const isActive = (href: string) =>

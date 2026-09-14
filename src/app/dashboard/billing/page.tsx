@@ -5,7 +5,7 @@ import { Loader2, CreditCard, Clock, CheckCircle2, XCircle } from "lucide-react"
 import { PlanCard } from "@/components/billing/PlanCard";
 import { PaymentForm } from "@/components/billing/PaymentForm";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import { BillingService } from "@/lib/billing";
+import { BillingService, clearBillingCache } from "@/lib/billing";
 import { PlanConfig, PaymentSubmission, Subscription } from "@/types";
 import { formatDate, timeAgo } from "@/lib/utils";
 
@@ -18,41 +18,32 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
-    try {
-      const [plansRes, subRes, payRes] = await Promise.all([
-        BillingService.getPlans(),
-        BillingService.getSubscription().catch(() => null),
-        BillingService.getPayments(),
-      ]);
-      setPlans(plansRes || []);
-      if (subRes?.subscription) setSubscription(subRes.subscription);
-      if (subRes?.currentPlan?.planId) setCurrentPlanId(subRes.currentPlan.planId);
-      setPayments(payRes || []);
-    } catch {
-      // ignore
-    } finally {
-      setLoading(false);
-    }
+    const [plansRes, subRes, payRes] = await Promise.all([
+      BillingService.getPlans().catch(() => []),
+      BillingService.getSubscription().catch(() => null),
+      BillingService.getPayments().catch(() => []),
+    ]);
+    setPlans(plansRes || []);
+    if (subRes?.subscription) setSubscription(subRes.subscription);
+    if (subRes?.currentPlan?.planId) setCurrentPlanId(subRes.currentPlan.planId);
+    setPayments(payRes || []);
+    setLoading(false);
   };
 
   useEffect(() => {
     let cancelled = false;
     Promise.all([
-      BillingService.getPlans(),
+      BillingService.getPlans().catch(() => []),
       BillingService.getSubscription().catch(() => null),
-      BillingService.getPayments(),
-    ])
-      .then(([plansRes, subRes, payRes]) => {
-        if (cancelled) return;
-        setPlans(plansRes || []);
-        if (subRes?.subscription) setSubscription(subRes.subscription);
-        if (subRes?.currentPlan?.planId) setCurrentPlanId(subRes.currentPlan.planId);
-        setPayments(payRes || []);
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+      BillingService.getPayments().catch(() => []),
+    ]).then(([plansRes, subRes, payRes]) => {
+      if (cancelled) return;
+      setPlans(plansRes || []);
+      if (subRes?.subscription) setSubscription(subRes.subscription);
+      if (subRes?.currentPlan?.planId) setCurrentPlanId(subRes.currentPlan.planId);
+      setPayments(payRes || []);
+      setLoading(false);
+    });
     return () => { cancelled = true; };
   }, []);
 
@@ -111,7 +102,8 @@ export default function BillingPage() {
           plan={selectedPlan}
           onSuccess={() => {
             setSelectedPlan(null);
-            load();
+            clearBillingCache();
+            void load();
           }}
           onCancel={() => setSelectedPlan(null)}
         />

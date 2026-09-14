@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2, Play, Timer, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import { AdminService } from "@/lib/admin";
+import { AdminService, clearAdminCache } from "@/lib/admin";
 import { timeAgo } from "@/lib/utils";
 import { toast } from "sonner";
 import { AdminJob, AdminJobLog } from "@/types";
@@ -65,7 +65,7 @@ export default function AdminJobsPage() {
           <h2 className="text-xl font-bold text-slate-900">Scheduled Jobs</h2>
           <p className="text-sm text-slate-500 mt-1">Background tasks running on the server.</p>
         </div>
-        <Button variant="outline" size="md" className="gap-2" onClick={() => { setLoading(true); void load(); }}>
+        <Button variant="outline" size="md" className="gap-2" onClick={() => { clearAdminCache(); setLoading(true); void load(); }}>
           <RefreshCw className="w-4 h-4" /> Refresh
         </Button>
       </div>

@@ -41,13 +41,23 @@ export class DeviceService {
     return res.data.data;
   }
 
-  static async getDevices(): Promise<Device[]> {
-    const res = await api.get("/devices");
-    return mergeDevices(res.data.data.devices || []);
+  static async getDevices(options: { cache?: boolean } = {}): Promise<Device[]> {
+    if (options.cache !== false && deviceCache && deviceCache.expiresAt > Date.now()) {
+      return deviceCache.value;
+    }
+    if (options.cache !== false && deviceRequest) return deviceRequest;
+
+    deviceRequest = api.get("/devices").then((res) => {
+      const value = mergeDevices(res.data.data.devices || []);
+      deviceCache = { expiresAt: Date.now() + 5_000, value };
+      return value;
+    }).finally(() => { deviceRequest = null; });
+    return deviceRequest;
   }
 
   static async disconnect(deviceId: string): Promise<void> {
     await api.post(`/devices/${deviceId}/disconnect`);
+    clearDeviceCache();
   }
 
   static async generateResumeCode(deviceId: string): Promise<ResumeCodeResponse> {
@@ -57,6 +67,14 @@ export class DeviceService {
 
   static async deleteDevice(deviceId: string): Promise<{ success: boolean; message: string }> {
     const res = await api.delete(`/devices/${deviceId}`);
+    clearDeviceCache();
     return res.data;
   }
+}
+
+let deviceRequest: Promise<Device[]> | null = null;
+let deviceCache: { expiresAt: number; value: Device[] } | null = null;
+
+export function clearDeviceCache(): void {
+  deviceCache = null;
 }

@@ -69,11 +69,13 @@ export function useAuth(requireAuth: boolean = false) {
           if (requireAuth) router.replace("/login");
         } else {
           setSessionCheckError(kind);
-          const delays = [5000, 15000, 60000];
-          const delay = delays[Math.min(retryCount.current, delays.length - 1)];
-          retryCount.current += 1;
-          if (retryTimer.current) clearTimeout(retryTimer.current);
-          retryTimer.current = setTimeout(() => { void runCheck(); }, delay);
+          if (kind === "transient" && retryCount.current < 3) {
+            const delays = [5000, 15000, 60000];
+            const delay = delays[retryCount.current];
+            retryCount.current += 1;
+            if (retryTimer.current) clearTimeout(retryTimer.current);
+            retryTimer.current = setTimeout(() => { void runCheck(); }, delay);
+          }
         }
       } finally {
         setLoading(false);

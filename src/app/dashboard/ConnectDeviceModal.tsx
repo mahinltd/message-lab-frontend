@@ -63,10 +63,8 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
           cleanup();
           setStep("success");
           toast.success("Device connected successfully!");
-          setTimeout(() => {
-            onConnected();
-            handleClose();
-          }, 1200);
+          onConnected();
+          handleClose();
         }
       } catch {
         // ignore
@@ -81,8 +79,10 @@ export function ConnectDeviceModal({ open, onClose, onConnected }: ConnectDevice
     }
     setLoading(true);
     try {
-      const result = await DeviceService.generatePairingCode(deviceName.trim());
-      const devices = await DeviceService.getDevices();
+      const [result, devices] = await Promise.all([
+        DeviceService.generatePairingCode(deviceName.trim()),
+        DeviceService.getDevices({ cache: false }),
+      ]);
       baselineDevicesRef.current = new Map(
         devices.map((device) => [getDeviceIdentity(device), device])
       );

@@ -25,15 +25,12 @@ export function ReconnectDeviceModal({ open, onClose, device, onConnected }: Rec
   const [success, setSuccess] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const successRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cleanup = () => {
     if (pollRef.current) clearInterval(pollRef.current);
     if (timerRef.current) clearInterval(timerRef.current);
-    if (successRef.current) clearTimeout(successRef.current);
     pollRef.current = null;
     timerRef.current = null;
-    successRef.current = null;
   };
 
   useEffect(() => cleanup, []);
@@ -55,14 +52,12 @@ export function ReconnectDeviceModal({ open, onClose, device, onConnected }: Rec
         setSecondsLeft(result.expiresInMinutes * 60);
         pollRef.current = setInterval(async () => {
           try {
-            const devices = await DeviceService.getDevices();
+            const devices = await DeviceService.getDevices({ cache: false });
             if (devices.some((item) => item._id === device._id && item.status === "active")) {
               cleanup();
               setSuccess(true);
-              successRef.current = setTimeout(() => {
-                onConnected();
-                onClose();
-              }, 1200);
+              onConnected();
+              onClose();
             }
           } catch {
             // Keep polling while the device is reconnecting.
