@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { siteConfig } from "@/config/site";
 import { fetchContent } from "@/lib/server/content";
 import { BRAND_NAME } from "@/lib/brand";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
+        <GoogleAnalytics />
         {children}
         <Toaster
           position="top-right"
